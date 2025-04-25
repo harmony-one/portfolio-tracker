@@ -29,7 +29,7 @@ export class AppService {
       const { affected: snapshots } = await this.dataSource.manager.delete(PortfolioSnapshotEntity, {})
       this.logger.log(`DB CLEANED, deleted entries: snapshots=${snapshots}`)
     }
-    this.savePortfolioSnapshot()
+    // this.savePortfolioSnapshot()
   }
 
   private async getWalletPortfolios(walletAddress: string) {
@@ -51,7 +51,7 @@ export class AppService {
         items.push(...data)
         this.logger.log(`[provider ${i + 1} / ${dataProviders.length}] portfolio items=${data.length}`)
       } catch (e) {
-        console.error('Failed to fetch data', i, e)
+        console.error('Failed to fetch data', i, e.message)
       }
     }
 
@@ -95,7 +95,10 @@ export class AppService {
         walletAddress: dto.walletAddress
       },
       take: dto.limit || 1000,
-      skip: dto.offset || 0
+      skip: dto.offset || 0,
+      order: {
+        createdAt: 'desc'
+      }
     })
   }
 }
