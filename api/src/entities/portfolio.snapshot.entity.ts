@@ -5,7 +5,7 @@ import {
   CreateDateColumn
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import {PortfolioItem} from "../../../shared/types";
+import {PortfolioItem} from "../../types";
 
 @Entity({ name: 'portfolio_snapshots' })
 export class PortfolioSnapshotEntity {
