@@ -29,7 +29,7 @@ export class AppService {
       const { affected: snapshots } = await this.dataSource.manager.delete(PortfolioSnapshotEntity, {})
       this.logger.log(`DB CLEANED, deleted entries: snapshots=${snapshots}`)
     }
-    this.savePortfolioSnapshot()
+    // this.savePortfolioSnapshot()
   }
 
   private async getWalletPortfolios(walletAddress: string) {
@@ -64,6 +64,7 @@ export class AppService {
       this.logger.log(`Started updating wallet=${walletAddress}...`)
       const portfolioItems = await this.getWalletPortfolios(walletAddress)
       const snapshotEntity = this.dataSource.manager.create(PortfolioSnapshotEntity, {
+        version: '1.0.0',
         walletAddress,
         data: portfolioItems,
       })

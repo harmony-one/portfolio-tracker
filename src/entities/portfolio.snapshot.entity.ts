@@ -15,6 +15,10 @@ export class PortfolioSnapshotEntity {
 
   @ApiProperty()
   @Column()
+  version: string;
+
+  @ApiProperty()
+  @Column()
   walletAddress: string;
 
   @Column({ type: 'json' })
