@@ -1,8 +1,15 @@
 import {PortfolioSnapshot} from "../../types.ts";
 import {Box} from "grommet";
-import {Card, Statistic, Table, Typography} from "antd";
+import {Card, Statistic, Table, TableProps, Typography} from "antd";
 import moment from 'moment'
 import {useMemo} from "react";
+import Link from "antd/es/typography/Link";
+
+interface DataType {
+  name: string
+  rewardUsd: string
+  link: string
+}
 
 export const PositionsTable = (props: {
   snapshot: PortfolioSnapshot
@@ -10,7 +17,7 @@ export const PositionsTable = (props: {
   const { snapshot } = props
   const { createdAt } = snapshot
 
-  const columns = [
+  const columns: TableProps<DataType>['columns'] = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -20,6 +27,17 @@ export const PositionsTable = (props: {
       title: 'Reward (USD)',
       dataIndex: 'rewardUsd',
       key: 'rewardUsd',
+      render: (value) => {
+        return <Typography.Text copyable={true}>{value}</Typography.Text>
+      }
+    },
+    {
+      title: 'Link',
+      dataIndex: 'link',
+      key: 'link',
+      render: (value) => {
+        return <Link href={value} target={`_blank`}>Open</Link>
+      }
     },
   ];
 
@@ -28,6 +46,7 @@ export const PositionsTable = (props: {
       key: index,
       name: item.name,
       rewardUsd: item.rewardValue,
+      link: item.depositLink
     }
   })
 
@@ -56,9 +75,9 @@ export const PositionsTable = (props: {
       <Card variant="borderless">
         <Statistic
           title="Last Updated"
-          value={moment(createdAt).format('YYYY MMM DD, HH:mm:ss')}
+          value={moment(createdAt).format('YYYY MMM DD, HH:mm')}
           valueRender={(value) => {
-            return <Typography.Text style={{ fontSize: '20px' }}>{value}</Typography.Text>
+            return <Typography.Text style={{ fontSize: '16px' }}>{value}</Typography.Text>
           }}
         />
       </Card>

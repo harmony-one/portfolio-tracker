@@ -5,11 +5,14 @@ const client = axios.create({
   baseURL: 'https://portfolio-tracker-api.fly.dev'
 })
 
-export const getPortfolioSnapshots = async (walletAddress: string) => {
+export const getPortfolioSnapshots = async (params: {
+  walletAddress: string
+  limit?: number
+}) => {
   const { data } = await client.get<PortfolioSnapshot[]>(`/portfolioSnapshots`, {
     params: {
-      // walletAddress
-      limit: 1
+      // walletAddress: params.walletAddress,
+      limit: params.limit || 10
     }
   })
   return data

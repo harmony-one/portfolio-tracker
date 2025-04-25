@@ -1,5 +1,5 @@
 import {Box, Text} from "grommet";
-import {Button, Input} from "antd";
+import {Input} from "antd";
 import {useEffect, useState} from "react";
 import {PortfolioSnapshot} from "../../types.ts";
 import {appConfig} from "../../config.ts";
@@ -19,7 +19,10 @@ export const PortfolioPage = () => {
   const loadSnapshots = async () => {
     setInProgress(true)
     try {
-      const items = await getPortfolioSnapshots(walletAddress)
+      const items = await getPortfolioSnapshots({
+        walletAddress,
+        limit: 10
+      })
       console.log('items', items)
       setPortfolioSnapshots(items)
     } catch (e) {
@@ -37,28 +40,29 @@ export const PortfolioPage = () => {
       <Text size={'22px'} weight={600}>Portfolio Tracker</Text>
     </Box>
     <Box margin={{ top: '32px' }}>
-      <Box gap={'8px'} width={'400px'}>
+      <Box gap={'8px'} width={'500px'}>
         <Text>Wallet Address</Text>
         <Input
           placeholder={'0x...'}
+          size={'large'}
           value={walletAddress}
           onChange={(e) => setWalletAddress(e.target.value)}
         />
       </Box>
-      <Box margin={{ top: '32px' }} width={'200px'}>
-        <Button
-          type={'primary'}
-          disabled={inProgress}
-          loading={inProgress}
-          onClick={onGetRewardsClick}>
-          Get Rewards
-        </Button>
-      </Box>
-      <Box margin={{ top: '32px' }}>
-        <Text>{status}</Text>
-      </Box>
+      {/*<Box margin={{ top: '32px' }} width={'200px'}>*/}
+      {/*  <Button*/}
+      {/*    type={'primary'}*/}
+      {/*    disabled={inProgress}*/}
+      {/*    loading={inProgress}*/}
+      {/*    onClick={onGetRewardsClick}>*/}
+      {/*    Get Rewards*/}
+      {/*  </Button>*/}
+      {/*</Box>*/}
+      {/*<Box margin={{ top: '32px' }}>*/}
+      {/*  <Text>{status}</Text>*/}
+      {/*</Box>*/}
     </Box>
-    <Box margin={{ top: '32px' }}>
+    <Box margin={{ top: '16px' }}>
       <WalletPortfolio
         walletAddress={walletAddress}
         snapshots={portfolioSnapshots}
