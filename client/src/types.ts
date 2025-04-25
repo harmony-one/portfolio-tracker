@@ -30,3 +30,9 @@ export interface PortfolioSnapshot {
   data: PortfolioItem[]
   "createdAt": string
 }
+
+export interface PositionReward {
+  asset: string
+  amount: string
+  value: string
+}
