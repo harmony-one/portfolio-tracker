@@ -6,10 +6,10 @@ import {PortfolioItem} from "../../types";
 import moment from "moment/moment";
 import {getSwapXVaultDeposits} from "../../api";
 import {getBlockAtTimestamp} from "../../api/llama";
-import * as PoolsList from './poolsList.json'
-import * as SwapXPoolABI from './SwapxGaugeV2CL.json'
-import * as SwapXRewardsTokenABI from './SwapXRewardsToken.json'
-import * as ICHIVaultABI from './ICHIVault.json'
+import PoolsList from './poolsList.json'
+import SwapXPoolABI from './SwapxGaugeV2CL.json'
+import SwapXRewardsTokenABI from './SwapXRewardsToken.json'
+import ICHIVaultABI from './ICHIVault.json'
 
 // https://sonicscan.org/address/0xdce26623440b34a93e748e131577049a8d84dded#readContract
 // query: "query ConcPools...

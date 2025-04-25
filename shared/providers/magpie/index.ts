@@ -3,9 +3,9 @@ import {getTokenPrice} from "../../api/coingecko";
 import Decimal from "decimal.js";
 import {PortfolioItem} from "../../types";
 import {calculateAPR, calculateDaysDifference, portfolioItemFactory, roundToSignificantDigits} from "../../helpers";
-import * as moment from "moment";
+import moment from "moment";
 import {getTransactions} from "../../api/sonicscan";
-import * as MasterPenpieABI from './MasterPenpie.json'
+import MasterPenpieABI from './MasterPenpie.json'
 // Rewarder ABI: https://arbiscan.io/address/0xD51FDCcBEB6f69df92A0f0ee0141349E332FE670#code
 
 // ABI: https://arbiscan.io/address/0x2854f036587c3f7F90d372f71fcD4B32616aD691#code

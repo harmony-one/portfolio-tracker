@@ -1,7 +1,7 @@
 import { PortfolioItem } from "../../types";
 import { ethers } from "ethers";
 import Decimal from "decimal.js";
-import * as moment from "moment";
+import moment from "moment";
 import {
   calculateDaysDifference,
   calculateAPR,
@@ -10,8 +10,6 @@ import {
 } from "../../helpers";
 import { getClosestBlockByTimestamp } from "../../api/rpc";
 import { getSpectraData } from "../../api/spectra";
-import fs from "fs";
-import { arrayToTSV } from "../../utils";
 
 const provider = new ethers.JsonRpcProvider("https://rpc.soniclabs.com");
 
@@ -20,10 +18,10 @@ const SpectraLPTokenAddress = "0x7006bfca68c46a3bf98b41d0bd5665846a99440d";
 const SpectraPTAddress = "0x7002383d2305B8f3b2b7786F50C13D132A22076d";
 const SpectraYTAddress = '0x96E15759F99502692F7b39c3A80FE44C5da7DC8d'
 
-import * as SpectraPoolABI from "./SpectraLP.json"
-import * as SpectraLPTokenABI from "../../abi/ERC20.json"
-import * as PrincipalTokenABI from './SpectraPT.json'
-import * as YieldTokenABI from './SpectraYT.json'
+import SpectraPoolABI from "./SpectraLP.json"
+import SpectraLPTokenABI from "../../abi/ERC20.json"
+import PrincipalTokenABI from './SpectraPT.json'
+import YieldTokenABI from './SpectraYT.json'
 
 export const getSpectraInfo = async (walletAddress: string): Promise<PortfolioItem[]> => {
   const portfolioItems: PortfolioItem[] = [];

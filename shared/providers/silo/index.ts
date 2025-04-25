@@ -1,11 +1,11 @@
 import {PortfolioItem} from "../../types";
 import {ethers} from "ethers";
 import {calculateAPR, calculateDaysDifference, portfolioItemFactory, roundToSignificantDigits} from "../../helpers";
-import * as moment from "moment";
+import moment from "moment";
 import Decimal from "decimal.js";
 import {getSiloDeposits} from "../../api/silo-subgraph";
-import * as SiloABI from '../../abi/Silo.json'
-import * as BoringVaultABI from '../../abi/BoringVault.json'
+import SiloABI from '../../abi/Silo.json'
+import BoringVaultABI from '../../abi/BoringVault.json'
 
 const provider = new ethers.JsonRpcProvider("https://rpc.soniclabs.com");
 const SiloAddress = '0xe6605932e4a686534D19005BB9dB0FBA1F101272'

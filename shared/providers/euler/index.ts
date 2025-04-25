@@ -3,10 +3,10 @@ import {PortfolioItem} from "../../types";
 import {getEulerDeposits} from "../../api/euler-subgraph";
 import Decimal from "decimal.js";
 import {calculateAPR, calculateDaysDifference, portfolioItemFactory, roundToSignificantDigits} from "../../helpers";
-import * as moment from "moment";
+import moment from "moment";
 import {getEulerMerklRewards} from "../../api/euler-api";
-import * as EulerEVaultABI from './EulerEVault.json'
-import * as FiatTokenV2_ABI from './FiatTokenV2_2_Euler.json'
+import EulerEVaultABI from './EulerEVault.json'
+import FiatTokenV2_ABI from './FiatTokenV2_2_Euler.json'
 
 const provider = new ethers.JsonRpcProvider("https://rpc.soniclabs.com");
 const vaultAddress = '0x196F3C7443E940911EE2Bb88e019Fd71400349D9'

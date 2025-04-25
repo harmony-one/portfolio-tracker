@@ -1,16 +1,16 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {Cron, CronExpression, SchedulerRegistry} from "@nestjs/schedule";
 import {ConfigService} from "@nestjs/config";
-import {PortfolioItem} from "./types";
+import {PortfolioItem} from "../../shared/types";
 import {DataSource} from "typeorm";
 import {PortfolioSnapshotEntity} from "./entities/portfolio.snapshot.entity";
-import {getShadowInfo} from "./providers/shadow";
-import {getSwapXInfo} from "./providers/swapx";
-import {getMagpieInfo} from "./providers/magpie";
-import {getSiloInfo} from "./providers/silo";
-import {getEulerInfo} from "./providers/euler";
-import {getSpectraInfo} from "./providers/spectra";
 import {GetPortfolioSnapshotsDto} from "./dto/portfolio.dto";
+import { getShadowInfo } from '../../shared/providers/shadow'
+import { getSwapXInfo } from '../../shared/providers/swapx'
+import { getMagpieInfo } from '../../shared/providers/magpie'
+import { getSiloInfo } from '../../shared/providers/silo'
+import { getEulerInfo } from '../../shared/providers/euler'
+import { getSpectraInfo } from '../../shared/providers/spectra'
 
 const cronJobName = 'update_job'
 
@@ -29,7 +29,7 @@ export class AppService {
       const { affected: snapshots } = await this.dataSource.manager.delete(PortfolioSnapshotEntity, {})
       this.logger.log(`DB CLEANED, deleted entries: snapshots=${snapshots}`)
     }
-    // this.savePortfolioSnapshot()
+    this.savePortfolioSnapshot()
   }
 
   private async getWalletPortfolios(walletAddress: string) {
