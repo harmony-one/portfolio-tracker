@@ -114,7 +114,7 @@ export const PositionsTable = (props: {
         type={'primary'}
         onClick={onExportClicked}
       >
-        Export to TSV
+        Save to TSV
       </Button>
     </Box>
   </Box>
