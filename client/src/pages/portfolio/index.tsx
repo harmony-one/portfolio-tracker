@@ -30,15 +30,15 @@ export const PortfolioPage = () => {
     setInProgress(false)
   }
 
-  const onGetRewardsClick = async () => {
-    return loadSnapshots()
-  }
+  // const onGetRewardsClick = async () => {
+  //   return loadSnapshots()
+  // }
 
-  return <Box pad={'32px'}>
+  return <Box pad={'16px 32px'}>
     <Box>
       <Text size={'22px'} weight={600}>Portfolio Tracker</Text>
     </Box>
-    <Box margin={{ top: '32px' }}>
+    <Box margin={{ top: '16px' }}>
       <Box gap={'8px'} width={'500px'}>
         <Text>Wallet Address</Text>
         <Text size={'18px'}>{walletAddress}</Text>
@@ -62,7 +62,7 @@ export const PortfolioPage = () => {
       {/*  <Text>{status}</Text>*/}
       {/*</Box>*/}
     </Box>
-    <Box margin={{ top: '32px' }} gap={'8px'}>
+    <Box margin={{ top: '16px' }} gap={'8px'}>
       <Text size={'14px'}>Position Snapshots</Text>
       <WalletPortfolio
         walletAddress={walletAddress}
