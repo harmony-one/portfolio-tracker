@@ -1,5 +1,4 @@
 import {Box, Text} from "grommet";
-import {Input} from "antd";
 import {useEffect, useState} from "react";
 import {PortfolioSnapshot} from "../../types.ts";
 import {appConfig} from "../../config.ts";
@@ -42,12 +41,13 @@ export const PortfolioPage = () => {
     <Box margin={{ top: '32px' }}>
       <Box gap={'8px'} width={'500px'}>
         <Text>Wallet Address</Text>
-        <Input
-          placeholder={'0x...'}
-          size={'large'}
-          value={walletAddress}
-          onChange={(e) => setWalletAddress(e.target.value)}
-        />
+        <Text size={'18px'}>{walletAddress}</Text>
+        {/*<Input*/}
+        {/*  placeholder={'0x...'}*/}
+        {/*  size={'large'}*/}
+        {/*  value={walletAddress}*/}
+        {/*  onChange={(e) => setWalletAddress(e.target.value)}*/}
+        {/*/>*/}
       </Box>
       {/*<Box margin={{ top: '32px' }} width={'200px'}>*/}
       {/*  <Button*/}

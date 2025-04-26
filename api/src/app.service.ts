@@ -29,7 +29,11 @@ export class AppService {
       const { affected: snapshots } = await this.dataSource.manager.delete(PortfolioSnapshotEntity, {})
       this.logger.log(`DB CLEANED, deleted entries: snapshots=${snapshots}`)
     }
-    // this.savePortfolioSnapshot()
+
+    const snapshots = await this.getPortfolioSnapshots({})
+    if(snapshots.length === 0) {
+      this.savePortfolioSnapshot()
+    }
   }
 
   private async getWalletPortfolios(walletAddress: string) {
@@ -65,7 +69,7 @@ export class AppService {
       const portfolioItems = await this.getWalletPortfolios(walletAddress)
       const snapshotEntity = this.dataSource.manager.create(PortfolioSnapshotEntity, {
         version: '1.0.0',
-        walletAddress,
+        walletAddress: walletAddress.toLowerCase(),
         data: portfolioItems,
       })
       await this.dataSource.manager.save(PortfolioSnapshotEntity, snapshotEntity);
@@ -73,7 +77,7 @@ export class AppService {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR, {
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
     name: cronJobName
   })
   async portfolioSnapshotJob() {

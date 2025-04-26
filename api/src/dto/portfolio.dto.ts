@@ -14,11 +14,11 @@ export class GetPortfolioSnapshotsDto {
   @Type(() => String)
   @IsString()
   @IsOptional()
-  limit: number;
+  limit?: number;
 
   @ApiProperty({ type: Number, required: false, default: '0' })
   @Type(() => String)
   @IsString()
   @IsOptional()
-  offset: number;
+  offset?: number;
 }
