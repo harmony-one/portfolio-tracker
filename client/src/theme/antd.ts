@@ -49,6 +49,8 @@ export const antdTheme: ThemeConfig = {
       headerColor: '#E4E4E8',
       rowExpandedBg: '#1E222E',
       footerBg: '#1E222E',
+      cellPaddingBlock: 8,
+      cellPaddingInline: 8
     },
     Popover: {
       colorBgElevated: '#1A1E2A'

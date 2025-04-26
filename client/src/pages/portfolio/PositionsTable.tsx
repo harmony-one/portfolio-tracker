@@ -33,7 +33,7 @@ export const PositionsTable = (props: {
       }
     },
     {
-      title: 'Link',
+      title: 'Deposit Link',
       dataIndex: 'link',
       key: 'link',
       render: (value) => {
