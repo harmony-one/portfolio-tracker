@@ -62,7 +62,7 @@ export const PortfolioPage = () => {
       {/*  <Text>{status}</Text>*/}
       {/*</Box>*/}
     </Box>
-    <Box margin={{ top: '16px' }} gap={'8px'}>
+    <Box margin={{ top: '16px' }}>
       <Text size={'14px'}>Position Snapshots</Text>
       <WalletPortfolio
         walletAddress={walletAddress}
