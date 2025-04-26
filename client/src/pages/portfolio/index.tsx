@@ -6,9 +6,9 @@ import {getPortfolioSnapshots} from "../../api";
 import {WalletPortfolio} from "./WalletPortfolio.tsx";
 
 export const PortfolioPage = () => {
-  const [inProgress, setInProgress] = useState(false);
-  const [status, setStatus] = useState<string>('');
-  const [walletAddress, setWalletAddress] = useState(appConfig.defaultWalletAddress)
+  const [_, setInProgress] = useState(false);
+  // const [status, setStatus] = useState<string>('');
+  const [walletAddress] = useState(appConfig.defaultWalletAddress)
   const [portfolioSnapshots, setPortfolioSnapshots] = useState<PortfolioSnapshot[]>([]);
 
   useEffect(() => {
