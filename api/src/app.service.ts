@@ -10,7 +10,7 @@ import { getSwapXInfo } from '../providers/swapx'
 import { getMagpieInfo } from '../providers/magpie'
 import { getSiloInfo } from '../providers/silo'
 import { getEulerInfo } from '../providers/euler'
-import { getSpectraInfo } from '../providers/spectra'
+import {getBeefyInfo} from "../providers/beefy";
 
 const cronJobName = 'update_job'
 
@@ -45,7 +45,7 @@ export class AppService {
       getMagpieInfo,
       getSiloInfo,
       getEulerInfo,
-      getSpectraInfo
+      getBeefyInfo
     ]
 
     for(let i = 0; i < dataProviders.length; i++) {
