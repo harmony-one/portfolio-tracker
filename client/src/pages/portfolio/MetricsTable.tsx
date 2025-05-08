@@ -8,6 +8,7 @@ interface DataType {
   totalValue: string
   cagrValue: string
   volatility: string
+  // maxDrawdown: string
 }
 
 const calculateCAGR = (
@@ -56,6 +57,11 @@ export const MetricsTable = (props: {
       dataIndex: 'volatility',
       key: 'volatility',
     },
+    // {
+    //   title: 'Max drawdown',
+    //   dataIndex: 'maxDrawdown',
+    //   key: 'maxDrawdown',
+    // },
   ];
 
   const dataSource = useMemo(() => {
@@ -69,14 +75,16 @@ export const MetricsTable = (props: {
         snapshots.length
       )
 
-      const volatility = calculateVolatility(snapshots.map(item => item.data.totalValueUSD))
-
+      const values = snapshots.map(item => item.data.totalValueUSD)
+      const volatility = calculateVolatility(values)
+      // const maxDrawdown = calculateMaxDrawdown(values)
       return [
         {
           key: lastSnapshot.id,
           totalValue: lastSnapshot.data.totalValueUSD.toString(),
           cagrValue: new Decimal(cagrValue).toSD(3).toString(),
           volatility: `${new Decimal(volatility).toSD(3).toString()}%`,
+          // maxDrawdown: `${new Decimal(maxDrawdown).toSD(3).toString()}%`,
         },
       ]
     }

@@ -82,6 +82,7 @@ export const arrayToTSV = <T extends Record<string, any>>(
   return headerRow + '\n' + rows.join('\n');
 }
 
+// Maximum drawdown (MDD) measures the largest peak-to-trough decline in a series of values (typically prices or returns)
 export const calculateMaxDrawdown = (prices: number[]) => {
   if (!prices || prices.length < 2) {
     return 0;
