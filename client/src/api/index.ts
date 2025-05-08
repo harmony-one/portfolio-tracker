@@ -12,7 +12,7 @@ export const getPortfolioSnapshots = async (params: {
   const { data } = await client.get<PortfolioSnapshot[]>(`/portfolioSnapshots`, {
     params: {
       walletAddress: params.walletAddress,
-      limit: params.limit || 10
+      limit: params.limit || 100
     }
   })
   return data

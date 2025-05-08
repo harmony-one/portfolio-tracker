@@ -3,7 +3,6 @@ import {useEffect, useState} from "react";
 import {PortfolioSnapshot} from "../../types.ts";
 import {appConfig} from "../../config.ts";
 import {getPortfolioSnapshots} from "../../api";
-import {WalletPortfolio} from "./WalletPortfolio.tsx";
 import {TradingViewChart} from "./chart";
 
 export const PortfolioPage = () => {
@@ -20,8 +19,8 @@ export const PortfolioPage = () => {
     setInProgress(true)
     try {
       const items = await getPortfolioSnapshots({
-        walletAddress,
-        limit: 10
+        walletAddress: walletAddress.toLowerCase(),
+        limit: 100
       })
       console.log('items', items)
       setPortfolioSnapshots(items)
@@ -65,13 +64,6 @@ export const PortfolioPage = () => {
     </Box>
     <Box>
       <TradingViewChart height={300} snapshots={portfolioSnapshots} />
-    </Box>
-    <Box margin={{ top: '16px' }}>
-      <Text size={'14px'}>Position Snapshots</Text>
-      <WalletPortfolio
-        walletAddress={walletAddress}
-        snapshots={portfolioSnapshots}
-      />
     </Box>
   </Box>
 }

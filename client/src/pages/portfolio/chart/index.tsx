@@ -7,8 +7,8 @@ import moment from 'moment';
 import { defaultTooltipState, getTooltipState, TooltipContainer, TradingViewTooltipState } from './helpers.tsx';
 
 export const TradingViewChart = (props: {
-    height: number;
-    snapshots: PortfolioSnapshot[];
+    height: number
+    snapshots: PortfolioSnapshot[]
 }) => {
     const { snapshots, height } = props
 
@@ -20,13 +20,10 @@ export const TradingViewChart = (props: {
         return snapshots
           .reverse()
           .map(snapshot => {
-            const totalValueUSD = snapshot.data.reduce((acc, item) => {
-                return acc + (+item.depositValue + +item.rewardValue)
-            }, 0)
-              const unixTimestamp = moment(snapshot.createdAt).unix()
+            const unixTimestamp = moment(snapshot.createdAt).unix()
             return {
-                time: Math.floor(unixTimestamp / 1000) as UTCTimestamp,
-                value: totalValueUSD,
+                time: Math.floor(unixTimestamp) as UTCTimestamp,
+                value: snapshot.data.totalValueUSD,
             }
         })
     }, [snapshots])
@@ -86,7 +83,7 @@ export const TradingViewChart = (props: {
             },
             localization: {
                 priceFormatter: (priceValue: BarPrice) => {
-                    return `${Math.round(priceValue)}%`
+                    return `${Math.round(priceValue)} USD`
                 }
             },
         });
@@ -111,18 +108,13 @@ export const TradingViewChart = (props: {
     const tooltip = useMemo(() => {
         return {
             ...tooltipState,
-            title: 'Yes',
-            value: `${tooltipState.value}¢`,
+            title: 'Total value',
+            value: `Total value: ${tooltipState.value}`,
+            pendlePTValue: `${tooltipState.pendlePTValue}`,
         }
     }, [tooltipState])
 
     return <Box style={{ position: 'relative' }}>
-        {/*<Box direction={'row'} gap={'8px'} align={'center'}>*/}
-        {/*    <Text color={'textSecondary'} size={'14px'}>YES</Text>*/}
-        {/*    <Text color={'accentOutcome'} size={'14px'}>*/}
-        {/*        {yesOdds}% chance*/}
-        {/*    </Text>*/}
-        {/*</Box>*/}
         <Box style={{
             // opacity: loadingError ? 0.4 : undefined,
             // filter: loadingError ? 'blur(2px)' : undefined
@@ -146,14 +138,16 @@ export const TradingViewChart = (props: {
                                 {moment(+tooltip.time * 1000).format('MMM D, YYYY, HH:mm')}
                             </Text>
                             <Box direction={'row'} margin={{top: '2px'}} gap={'8px'}>
-                                {tooltip.title &&
-                                    <Text color={'text'} size={'16px'} weight={600}>
-                                        {tooltip.title}
+                                {/*{tooltip.title &&*/}
+                                {/*    <Text color={'text'} size={'16px'} weight={600}>*/}
+                                {/*        {tooltip.title}*/}
+                                {/*    </Text>*/}
+                                {/*}*/}
+                                <Box>
+                                    <Text color={'accentWhite'} size={'16px'} weight={600}>
+                                        {tooltip.value}
                                     </Text>
-                                }
-                                <Text color={'accentWhite'} size={'16px'} weight={600}>
-                                    {tooltip.value}
-                                </Text>
+                                </Box>
                             </Box>
                         </TooltipContainer>
                     }

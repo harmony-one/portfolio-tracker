@@ -233,7 +233,7 @@ export interface WalletHistoryItem {
 }
 
 export interface PortfolioValue {
-  totalValueUSD,
-  pendlePTValue,
-  pendleLPValue
+  totalValueUSD: number,
+  pendlePTValue: number,
+  pendleLPValue: number
 }

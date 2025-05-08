@@ -7,6 +7,7 @@ export interface TradingViewTooltipState {
     visible: boolean
     title: string,
     value: string,
+    pendlePTValue: string,
     time: string,
     left: number,
     top: number
@@ -16,13 +17,14 @@ export const defaultTooltipState: TradingViewTooltipState = {
     visible: false,
     title: '',
     value: '',
+    pendlePTValue: '',
     time: '',
     left: 0,
     top: 0
 }
 
 export const toolTipWidth = 170;
-export const toolTipHeight = 80;
+export const toolTipHeight = 120;
 export const toolTipMargin = 15;
 
 export const WidgetContainer = styled(Box)`
@@ -71,7 +73,7 @@ export const getTooltipState = (
         // tooltipRef.current.style.display = 'none';
     } else {
         const data = param.seriesData.get(series);
-        const price = data.value !== undefined ? data.value : data.close;
+        const price = data.value
         const coordinate = series.priceToCoordinate(price);
         let shiftedCoordinate = param.point.x - 50;
         if (coordinate === null) {
@@ -97,6 +99,7 @@ export const getTooltipState = (
             visible: true,
             title: '',
             value: price,
+            pendlePTValue: data.pendlePTValue,
             time: param.time,
             left: shiftedCoordinate,
             top: coordinateY

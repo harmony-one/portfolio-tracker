@@ -25,12 +25,18 @@ export interface PortfolioItem {
   depositLink: string
 }
 
+export interface PortfolioValue {
+  totalValueUSD: number
+  pendlePTValue: number
+  pendleLPValue: number
+}
+
 export interface PortfolioSnapshot {
   id: string
   version: string
   walletAddress: string
-  data: PortfolioItem[]
-  "createdAt": string
+  data: PortfolioValue
+  createdAt: string
 }
 
 export interface PositionReward {
