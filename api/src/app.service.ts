@@ -4,7 +4,7 @@ import {ConfigService} from "@nestjs/config";
 import {DataSource} from "typeorm";
 import {PortfolioSnapshotEntity} from "./entities/portfolio.snapshot.entity";
 import {GetPortfolioSnapshotsDto} from "./dto/portfolio.dto";
-import {getPortfolioValue} from "../providers/metrics";
+import {getPortfolioMetrics} from "../providers/metrics";
 
 const cronJobName = 'update_job'
 
@@ -60,14 +60,19 @@ export class AppService {
     const wallets = this.configService.get<string[]>('WALLET_ADDRESSES')
     for(const walletAddress of wallets) {
       this.logger.log(`Started updating wallet=${walletAddress}...`)
-      const data = await getPortfolioValue(walletAddress)
-      const snapshotEntity = this.dataSource.manager.create(PortfolioSnapshotEntity, {
-        version: '1.0.0',
-        walletAddress: walletAddress.toLowerCase(),
-        data,
-      })
-      await this.dataSource.manager.save(PortfolioSnapshotEntity, snapshotEntity);
-      this.logger.log(`Saved new snapshot: wallet=${walletAddress}, portfolio value=${JSON.stringify(data)}`)
+
+      try {
+        const data = await getPortfolioMetrics(walletAddress)
+        const snapshotEntity = this.dataSource.manager.create(PortfolioSnapshotEntity, {
+          version: '1.0.0',
+          walletAddress: walletAddress.toLowerCase(),
+          data,
+        })
+        await this.dataSource.manager.save(PortfolioSnapshotEntity, snapshotEntity);
+        this.logger.log(`Saved new snapshot: wallet=${walletAddress}, portfolio value=${JSON.stringify(data)}`)
+      } catch (e) {
+        this.logger.error('Failed to update wallet:', e)
+      }
     }
   }
 
