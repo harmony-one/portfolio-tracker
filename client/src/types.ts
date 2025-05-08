@@ -48,4 +48,5 @@ export interface PositionReward {
 export interface TradingViewItem {
   time: UTCTimestamp
   value: number
+  pendlePTValue: number
 }

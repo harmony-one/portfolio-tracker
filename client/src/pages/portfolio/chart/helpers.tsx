@@ -5,25 +5,25 @@ import { RefObject } from 'react';
 
 export interface TradingViewTooltipState {
     visible: boolean
-    title: string,
-    value: string,
-    pendlePTValue: string,
     time: string,
     left: number,
     top: number
+    title: string,
+    value: string,
+    pendlePTValue: string,
 }
 
 export const defaultTooltipState: TradingViewTooltipState = {
     visible: false,
+    time: '',
+    left: 0,
+    top: 0,
     title: '',
     value: '',
     pendlePTValue: '',
-    time: '',
-    left: 0,
-    top: 0
 }
 
-export const toolTipWidth = 200;
+export const toolTipWidth = 260;
 export const toolTipHeight = 120;
 export const toolTipMargin = 15;
 
@@ -99,7 +99,7 @@ export const getTooltipState = (
             visible: true,
             title: '',
             value: price,
-            pendlePTValue: data.pendlePTValue,
+            pendlePTValue: data.pendlePTValue || 0,
             time: param.time,
             left: shiftedCoordinate,
             top: coordinateY

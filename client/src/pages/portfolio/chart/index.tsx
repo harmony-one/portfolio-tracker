@@ -24,6 +24,7 @@ export const TradingViewChart = (props: {
             return {
                 time: Math.floor(unixTimestamp) as UTCTimestamp,
                 value: snapshot.data.totalValueUSD,
+                pendlePTValue: 666
             }
         })
     }, [snapshots])
@@ -31,6 +32,7 @@ export const TradingViewChart = (props: {
     const chartContainerRef = useRef<HTMLDivElement>(null);
 
     const onCrosshairMove = (param: any, series: ISeriesApi<'Line'>) => {
+        console.log('param', param)
         const newTooltipState = getTooltipState(chartContainerRef, param, series)
         if(newTooltipState) {
             setTooltipState(newTooltipState)
@@ -39,13 +41,18 @@ export const TradingViewChart = (props: {
 
     useEffect(() => {
         if(chartInstance && chartSeries) {
-            chartSeries.setData(lineItems);
-            chartInstance.timeScale().fitContent()
+            try {
+                chartSeries.setData([]);
+                chartSeries.setData(lineItems);
+                chartInstance.timeScale().fitContent()
+            } catch (e) {
+                console.error(e)
+            }
         }
     }, [
         chartInstance,
         chartSeries,
-        lineItems
+        lineItems.length
     ]);
 
     useEffect(() => {
@@ -108,9 +115,9 @@ export const TradingViewChart = (props: {
     const tooltip = useMemo(() => {
         return {
             ...tooltipState,
-            title: 'Total value',
-            value: `Total value: ${tooltipState.value}`,
-            pendlePTValue: `${tooltipState.pendlePTValue}`,
+            // title: 'Total value',
+            value: `Total: ${tooltipState.value}`,
+            pendlePTValue: `Pendle PT: ${tooltipState.value}`
         }
     }, [tooltipState])
 
@@ -143,9 +150,12 @@ export const TradingViewChart = (props: {
                                 {/*        {tooltip.title}*/}
                                 {/*    </Text>*/}
                                 {/*}*/}
-                                <Box>
-                                    <Text color={'accentWhite'} size={'16px'} weight={600}>
+                                <Box gap={'8px'}>
+                                    <Text color={'accentWhite'} size={'14px'} weight={600}>
                                         {tooltip.value}
+                                    </Text>
+                                    <Text color={'accentWhite'} size={'14px'}>
+                                        {tooltip.pendlePTValue}
                                     </Text>
                                 </Box>
                             </Box>
