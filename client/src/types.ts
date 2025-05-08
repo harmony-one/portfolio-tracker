@@ -1,3 +1,5 @@
+import {UTCTimestamp} from "lightweight-charts";
+
 export interface PortfolioItem {
   name: string
   address: string
@@ -35,4 +37,9 @@ export interface PositionReward {
   asset: string
   amount: string
   value: string
+}
+
+export interface TradingViewItem {
+  time: UTCTimestamp
+  value: number
 }

@@ -4,6 +4,7 @@ import {PortfolioSnapshot} from "../../types.ts";
 import {appConfig} from "../../config.ts";
 import {getPortfolioSnapshots} from "../../api";
 import {WalletPortfolio} from "./WalletPortfolio.tsx";
+import {TradingViewChart} from "./chart";
 
 export const PortfolioPage = () => {
   const [_, setInProgress] = useState(false);
@@ -61,6 +62,9 @@ export const PortfolioPage = () => {
       {/*<Box margin={{ top: '32px' }}>*/}
       {/*  <Text>{status}</Text>*/}
       {/*</Box>*/}
+    </Box>
+    <Box>
+      <TradingViewChart height={300} snapshots={portfolioSnapshots} />
     </Box>
     <Box margin={{ top: '16px' }}>
       <Text size={'14px'}>Position Snapshots</Text>

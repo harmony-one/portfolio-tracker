@@ -231,3 +231,9 @@ export interface WalletHistoryItem {
   totalSonicValue: string
   totalUsdValue: string
 }
+
+export interface PortfolioValue {
+  totalValueUSD,
+  pendlePTValue,
+  pendleLPValue
+}

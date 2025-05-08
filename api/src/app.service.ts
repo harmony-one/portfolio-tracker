@@ -1,16 +1,10 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {Cron, CronExpression, SchedulerRegistry} from "@nestjs/schedule";
 import {ConfigService} from "@nestjs/config";
-import {PortfolioItem} from "../types";
 import {DataSource} from "typeorm";
 import {PortfolioSnapshotEntity} from "./entities/portfolio.snapshot.entity";
 import {GetPortfolioSnapshotsDto} from "./dto/portfolio.dto";
-import { getShadowInfo } from '../providers/shadow'
-import { getSwapXInfo } from '../providers/swapx'
-import { getMagpieInfo } from '../providers/magpie'
-import { getSiloInfo } from '../providers/silo'
-import { getEulerInfo } from '../providers/euler'
-import {getBeefyInfo} from "../providers/beefy";
+import {getPortfolioValue} from "../providers/metrics";
 
 const cronJobName = 'update_job'
 
@@ -36,48 +30,48 @@ export class AppService {
     }
   }
 
-  private async getWalletPortfolios(walletAddress: string) {
-    const items: PortfolioItem[] = []
-
-    const dataProviders = [
-      getShadowInfo,
-      getSwapXInfo,
-      getMagpieInfo,
-      getSiloInfo,
-      getEulerInfo,
-      getBeefyInfo
-    ]
-
-    for(let i = 0; i < dataProviders.length; i++) {
-      const fetchData = dataProviders[i]
-      try {
-        const data = await fetchData(walletAddress) as PortfolioItem[]
-        items.push(...data)
-        this.logger.log(`[provider ${i + 1} / ${dataProviders.length}] portfolio items=${data.length}`)
-      } catch (e) {
-        console.error('Failed to fetch data', i, e.message)
-      }
-    }
-
-    return items
-  }
+  // private async getWalletPortfolios(walletAddress: string) {
+  //   const items: PortfolioItem[] = []
+  //
+  //   const dataProviders = [
+  //     getShadowInfo,
+  //     getSwapXInfo,
+  //     getMagpieInfo,
+  //     getSiloInfo,
+  //     getEulerInfo,
+  //     getBeefyInfo
+  //   ]
+  //
+  //   for(let i = 0; i < dataProviders.length; i++) {
+  //     const fetchData = dataProviders[i]
+  //     try {
+  //       const data = await fetchData(walletAddress) as PortfolioItem[]
+  //       items.push(...data)
+  //       this.logger.log(`[provider ${i + 1} / ${dataProviders.length}] portfolio items=${data.length}`)
+  //     } catch (e) {
+  //       console.error('Failed to fetch data', i, e.message)
+  //     }
+  //   }
+  //
+  //   return items
+  // }
 
   private async savePortfolioSnapshot() {
     const wallets = this.configService.get<string[]>('WALLET_ADDRESSES')
     for(const walletAddress of wallets) {
       this.logger.log(`Started updating wallet=${walletAddress}...`)
-      const portfolioItems = await this.getWalletPortfolios(walletAddress)
+      const data = await getPortfolioValue(walletAddress)
       const snapshotEntity = this.dataSource.manager.create(PortfolioSnapshotEntity, {
         version: '1.0.0',
         walletAddress: walletAddress.toLowerCase(),
-        data: portfolioItems,
+        data,
       })
       await this.dataSource.manager.save(PortfolioSnapshotEntity, snapshotEntity);
-      this.logger.log(`Saved new snapshot: wallet=${walletAddress}, portfolio items=${portfolioItems.length}`)
+      this.logger.log(`Saved new snapshot: wallet=${walletAddress}, portfolio value=${JSON.stringify(data)}`)
     }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
+  @Cron(CronExpression.EVERY_HOUR, {
     name: cronJobName
   })
   async portfolioSnapshotJob() {

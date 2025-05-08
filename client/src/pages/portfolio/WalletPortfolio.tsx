@@ -12,7 +12,7 @@ export const WalletPortfolio = (props: {
   const items: TabsProps['items'] = snapshots.map((item) => {
     return {
       key: item.id,
-      label: moment(item.createdAt).format("MM/DD HH:mm"),
+      label: moment(item.createdAt).format("MMM DD"),
       children: <PositionsTable snapshot={item} />
     }
   })
