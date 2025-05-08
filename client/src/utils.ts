@@ -81,3 +81,33 @@ export const arrayToTSV = <T extends Record<string, any>>(
   // Combine header and rows with newlines
   return headerRow + '\n' + rows.join('\n');
 }
+
+export const calculateMaxDrawdown = (prices: number[]) => {
+  if (!prices || prices.length < 2) {
+    return 0;
+  }
+
+  let maxDrawdown = 0;
+  let peak = prices[0];
+  let trough = prices[0];
+
+  for (let i = 1; i < prices.length; i++) {
+    const currentPrice = prices[i];
+
+    // Update peak if current price is higher
+    if (currentPrice > peak) {
+      peak = currentPrice;
+      trough = currentPrice; // Reset trough to new peak
+    }
+    // Update trough if current price is lower
+    else if (currentPrice < trough) {
+      trough = currentPrice;
+    }
+
+    // Calculate drawdown from peak to trough
+    const drawdown = peak > 0 ? (peak - trough) / peak : 0;
+    maxDrawdown = Math.max(maxDrawdown, drawdown);
+  }
+
+  return maxDrawdown;
+}

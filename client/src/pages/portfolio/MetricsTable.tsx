@@ -2,10 +2,12 @@ import {PortfolioSnapshot} from "../../types.ts";
 import {Box} from "grommet";
 import {Table, TableProps} from "antd";
 import {useMemo} from "react";
+import Decimal from "decimal.js";
 
 interface DataType {
   totalValue: string
   cagrValue: string
+  volatility: string
 }
 
 const calculateCAGR = (
@@ -14,6 +16,23 @@ const calculateCAGR = (
   periods: number,
 ) => {
   return (Math.pow((end / start), 1 / periods) - 1) * 100
+}
+
+function calculateVolatility(prices: number[]): number {
+  if (!prices || prices.length === 0) {
+    return 0;
+  }
+
+  // Calculate mean
+  const mean = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+
+  // Calculate variance
+  const variance = prices.reduce((sum, price) => {
+    const diff = price - mean;
+    return sum + diff * diff;
+  }, 0) / prices.length;
+
+  return Math.sqrt(variance);
 }
 
 export const MetricsTable = (props: {
@@ -32,6 +51,11 @@ export const MetricsTable = (props: {
       dataIndex: 'cagrValue',
       key: 'cagrValue',
     },
+    {
+      title: 'Volatility',
+      dataIndex: 'volatility',
+      key: 'volatility',
+    },
   ];
 
   const dataSource = useMemo(() => {
@@ -45,11 +69,14 @@ export const MetricsTable = (props: {
         snapshots.length
       )
 
+      const volatility = calculateVolatility(snapshots.map(item => item.data.totalValueUSD))
+
       return [
         {
           key: lastSnapshot.id,
           totalValue: lastSnapshot.data.totalValueUSD.toString(),
-          cagrValue: cagrValue.toString(),
+          cagrValue: new Decimal(cagrValue).toSD(3).toString(),
+          volatility: `${new Decimal(volatility).toSD(3).toString()}%`,
         },
       ]
     }
