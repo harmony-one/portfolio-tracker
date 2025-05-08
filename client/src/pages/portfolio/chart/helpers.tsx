@@ -23,7 +23,7 @@ export const defaultTooltipState: TradingViewTooltipState = {
     top: 0
 }
 
-export const toolTipWidth = 170;
+export const toolTipWidth = 200;
 export const toolTipHeight = 120;
 export const toolTipMargin = 15;
 

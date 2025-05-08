@@ -4,10 +4,10 @@ import {PortfolioSnapshot} from "../../types.ts";
 import {appConfig} from "../../config.ts";
 import {getPortfolioSnapshots} from "../../api";
 import {TradingViewChart} from "./chart";
+import {MetricsTable} from "./MetricsTable.tsx";
 
 export const PortfolioPage = () => {
   const [_, setInProgress] = useState(false);
-  // const [status, setStatus] = useState<string>('');
   const [walletAddress] = useState(appConfig.defaultWalletAddress)
   const [portfolioSnapshots, setPortfolioSnapshots] = useState<PortfolioSnapshot[]>([]);
 
@@ -22,7 +22,6 @@ export const PortfolioPage = () => {
         walletAddress: walletAddress.toLowerCase(),
         limit: 100
       })
-      console.log('items', items)
       setPortfolioSnapshots(items)
     } catch (e) {
       console.error('Failed to load snapshots', e)
@@ -30,39 +29,21 @@ export const PortfolioPage = () => {
     setInProgress(false)
   }
 
-  // const onGetRewardsClick = async () => {
-  //   return loadSnapshots()
-  // }
-
   return <Box pad={'16px 32px'}>
     <Box>
       <Text size={'22px'} weight={600}>Portfolio Tracker</Text>
     </Box>
     <Box margin={{ top: '16px' }}>
       <Box gap={'8px'} width={'500px'}>
-        <Text>Wallet Address</Text>
+        <Text size={'16px'}>Wallet Address</Text>
         <Text size={'18px'}>{walletAddress}</Text>
-        {/*<Input*/}
-        {/*  placeholder={'0x...'}*/}
-        {/*  size={'large'}*/}
-        {/*  value={walletAddress}*/}
-        {/*  onChange={(e) => setWalletAddress(e.target.value)}*/}
-        {/*/>*/}
       </Box>
-      {/*<Box margin={{ top: '32px' }} width={'200px'}>*/}
-      {/*  <Button*/}
-      {/*    type={'primary'}*/}
-      {/*    disabled={inProgress}*/}
-      {/*    loading={inProgress}*/}
-      {/*    onClick={onGetRewardsClick}>*/}
-      {/*    Get Rewards*/}
-      {/*  </Button>*/}
-      {/*</Box>*/}
-      {/*<Box margin={{ top: '32px' }}>*/}
-      {/*  <Text>{status}</Text>*/}
-      {/*</Box>*/}
     </Box>
-    <Box>
+    <Box margin={{ top: '16px'}}>
+      <MetricsTable snapshots={portfolioSnapshots}/>
+    </Box>
+    <Box margin={{ top: '32px' }}>
+      <Text size={'16px'}>Performance</Text>
       <TradingViewChart height={300} snapshots={portfolioSnapshots} />
     </Box>
   </Box>
