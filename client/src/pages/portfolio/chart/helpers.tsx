@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Box } from 'grommet';
 import { ISeriesApi } from 'lightweight-charts';
 import { RefObject } from 'react';
-import {TradingViewItem} from "../../../types.ts";
+import {PortfolioSnapshotItem, TradingViewItem} from "../../../types.ts";
 
 export interface TradingViewTooltipState {
     visible: boolean
@@ -11,7 +11,7 @@ export interface TradingViewTooltipState {
     top: number
     title: string,
     value: string,
-    pendlePTValue: string,
+    items: PortfolioSnapshotItem[]
 }
 
 export const defaultTooltipState: TradingViewTooltipState = {
@@ -21,7 +21,7 @@ export const defaultTooltipState: TradingViewTooltipState = {
     top: 0,
     title: '',
     value: '',
-    pendlePTValue: '',
+    items: []
 }
 
 export const toolTipWidth = 260;
@@ -42,8 +42,8 @@ export const TooltipContainer = styled(WidgetContainer)`
     color: #ADAEB8;
     background-color: #2D3344;
     width: ${toolTipWidth + 16}px;
-    height: ${toolTipHeight}px;
-    padding: 0 12px;
+    // height: ${toolTipHeight}px;
+    padding: 8px 12px;
     text-align: left;
     z-index: 10;
     top: 12px;
@@ -103,7 +103,7 @@ export const getTooltipState = (
             visible: true,
             title: '',
             value: price,
-            pendlePTValue: String(matchingItem?.pendlePTValue ?? 0),
+            items: matchingItem?.items || [],
             time: param.time,
             left: shiftedCoordinate,
             top: coordinateY

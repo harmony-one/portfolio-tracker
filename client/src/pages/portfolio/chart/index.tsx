@@ -25,7 +25,7 @@ export const TradingViewChart = (props: {
             return {
                 time: Math.floor(unixTimestamp) as UTCTimestamp,
                 value: snapshot.data.totalValueUSD,
-                pendlePTValue: snapshot.data.pendlePTValue
+                items: snapshot.data.items
             }
         })
         lineItemsRef.current = items;
@@ -125,7 +125,6 @@ export const TradingViewChart = (props: {
             ...tooltipState,
             // title: 'Total value',
             value: `Total: ${tooltipState.value}`,
-            pendlePTValue: `Pendle PT: ${tooltipState.pendlePTValue}`
         }
     }, [tooltipState])
 
@@ -159,12 +158,18 @@ export const TradingViewChart = (props: {
                                 {/*    </Text>*/}
                                 {/*}*/}
                                 <Box gap={'8px'}>
-                                    <Text color={'accentWhite'} size={'14px'} weight={600}>
+                                    <Text color={'accentWhite'} size={'16px'} weight={600}>
                                         {tooltip.value}
                                     </Text>
-                                    <Text color={'accentWhite'} size={'14px'}>
-                                        {tooltip.pendlePTValue}
-                                    </Text>
+                                    <Box gap={'4px'}>
+                                        {tooltip.items
+                                          .filter(item => item.value > 0)
+                                          .map((item) => {
+                                            return <Text key={item.platform}>
+                                                {item.platform} {item.name}: {item.value}
+                                            </Text>
+                                        })}
+                                    </Box>
                                 </Box>
                             </Box>
                         </TooltipContainer>
