@@ -20,10 +20,10 @@ const config: DataSourceOptions = {
       rejectUnauthorized: ((process.env.DB_SSL_ENABLED || 'false') !== 'false')
     },
   entities: ['dist/**/*.entity{.ts,.js}'],
-  migrations: ['dist/migrations/*{.ts,.js}'],
-  synchronize: true,
+  migrations: ['dist/src/migrations/*{.ts,.js}'],
+  synchronize: false,
   migrationsTableName: 'migrations',
-  // migrationsRun: true,
+  migrationsRun: true,
 };
 
 export default new DataSource(config);

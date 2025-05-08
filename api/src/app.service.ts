@@ -26,7 +26,7 @@ export class AppService {
 
     const snapshots = await this.getPortfolioSnapshots({})
     if(snapshots.length === 0) {
-      this.savePortfolioSnapshot()
+      await this.savePortfolioSnapshot()
     }
   }
 
