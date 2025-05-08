@@ -15,25 +15,33 @@ export const TradingViewChart = (props: {
     const [chartInstance, setChartInstance] = useState<IChartApi>();
     const [chartSeries, setChartSeries] = useState<ISeriesApi<"Line", Time>>();
     const [tooltipState, setTooltipState] = useState<TradingViewTooltipState>(defaultTooltipState)
+    const lineItemsRef = useRef<TradingViewItem[]>([]);
 
     const lineItems: TradingViewItem[] = useMemo(() => {
-        return snapshots
+        const items = snapshots
           .reverse()
           .map(snapshot => {
             const unixTimestamp = moment(snapshot.createdAt).unix()
             return {
                 time: Math.floor(unixTimestamp) as UTCTimestamp,
                 value: snapshot.data.totalValueUSD,
-                pendlePTValue: 666
+                pendlePTValue: snapshot.data.pendlePTValue
             }
         })
+        lineItemsRef.current = items;
+        return items
     }, [snapshots])
 
     const chartContainerRef = useRef<HTMLDivElement>(null);
 
     const onCrosshairMove = (param: any, series: ISeriesApi<'Line'>) => {
         console.log('param', param)
-        const newTooltipState = getTooltipState(chartContainerRef, param, series)
+        const newTooltipState = getTooltipState(
+          chartContainerRef,
+          param,
+          series,
+          lineItemsRef.current
+        )
         if(newTooltipState) {
             setTooltipState(newTooltipState)
         }
@@ -117,7 +125,7 @@ export const TradingViewChart = (props: {
             ...tooltipState,
             // title: 'Total value',
             value: `Total: ${tooltipState.value}`,
-            pendlePTValue: `Pendle PT: ${tooltipState.value}`
+            pendlePTValue: `Pendle PT: ${tooltipState.pendlePTValue}`
         }
     }, [tooltipState])
 

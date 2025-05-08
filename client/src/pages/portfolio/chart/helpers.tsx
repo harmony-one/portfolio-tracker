@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Box } from 'grommet';
 import { ISeriesApi } from 'lightweight-charts';
 import { RefObject } from 'react';
+import {TradingViewItem} from "../../../types.ts";
 
 export interface TradingViewTooltipState {
     visible: boolean
@@ -54,7 +55,8 @@ export const TooltipContainer = styled(WidgetContainer)`
 export const getTooltipState = (
     chartContainerRef: RefObject<HTMLDivElement>,
     param: any,
-    series: ISeriesApi<'Line'>
+    series: ISeriesApi<'Line'>,
+    lineItems: TradingViewItem[]
 ) => {
     if (!chartContainerRef.current) {
         return
@@ -94,12 +96,14 @@ export const getTooltipState = (
                     )
                 );
 
+        const matchingItem = lineItems.find(item => item.time === param.time);
+
         newTooltipState = {
             ...newTooltipState,
             visible: true,
             title: '',
             value: price,
-            pendlePTValue: data.pendlePTValue || 0,
+            pendlePTValue: String(matchingItem?.pendlePTValue ?? 0),
             time: param.time,
             left: shiftedCoordinate,
             top: coordinateY
