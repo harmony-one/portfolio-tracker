@@ -1,6 +1,7 @@
 import {getPendlePositions} from "../../api/pendle";
 import {getBeefyInfo} from "../beefy";
 import {getEulerInfo} from "../euler";
+import {getMagpieInfo} from "../magpie";
 
 const calculateCAGR = (
   start: number,
@@ -33,6 +34,11 @@ export const getPortfolioMetrics = async (
     return acc + Number(item.depositValue) + Number(item.rewardValue)
   }, 0)
 
+  const magpieInfo = await getMagpieInfo(walletAddress)
+  const magpieValue = magpieInfo.reduce((acc, item) => {
+    return acc + Number(item.depositValue) + Number(item.rewardValue)
+  }, 0)
+
   const items = [
     {
       platform: 'Pendle',
@@ -55,6 +61,12 @@ export const getPortfolioMetrics = async (
       name: 'MEV USDC.e',
       value: eulerMEVUSDCeValue,
       link: 'https://app.euler.finance/vault/0x196F3C7443E940911EE2Bb88e019Fd71400349D9?network=sonic'
+    },
+    {
+      platform: 'Magpie',
+      name: 'Aave aUSDC',
+      value: magpieValue,
+      link: 'https://www.pendle.magpiexyz.io/stake/0x3F5EA53d1160177445B1898afbB16da111182418'
     }
   ]
 
