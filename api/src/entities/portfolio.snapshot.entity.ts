@@ -5,7 +5,7 @@ import {
   CreateDateColumn
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import {PortfolioItem, PortfolioValue} from "../../types";
+import {PortfolioSnapshotData} from "../../types";
 
 @Entity({ name: 'portfolio_snapshots' })
 export class PortfolioSnapshotEntity {
@@ -22,7 +22,7 @@ export class PortfolioSnapshotEntity {
   walletAddress: string;
 
   @Column({ type: 'json' })
-  data: PortfolioValue;
+  data: PortfolioSnapshotData;
 
   @ApiProperty()
   @CreateDateColumn({ name: 'createdAt' })

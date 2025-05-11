@@ -232,8 +232,14 @@ export interface WalletHistoryItem {
   totalUsdValue: string
 }
 
-export interface PortfolioValue {
-  totalValueUSD: number,
-  pendlePTValue: number,
-  pendleLPValue: number
+export interface PortfolioSnapshotDataItem {
+  platform: string
+  name: string
+  value: number
+  link: string
+}
+
+export interface PortfolioSnapshotData {
+  totalValueUSD: number
+  items: PortfolioSnapshotDataItem[]
 }

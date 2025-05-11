@@ -23,13 +23,16 @@ export const getPortfolioMetrics = async (
     pendleLPValue = openPositions.reduce((acc, cur) => acc + cur.lp.valuation, 0)
     pendlePTValue = openPositions.reduce((acc, cur) => acc + cur.pt.valuation, 0)
   }
-
   const beefyItems = await getBeefyInfo(walletAddress);
-  const beefyValue = beefyItems.reduce((acc, item) => {
+  const eulerItems = await getEulerInfo(walletAddress);
+  const magpieItems = await getMagpieInfo(walletAddress);
+  const portfolioItems = [...beefyItems, ...eulerItems, ...magpieItems]
+
+  const beefyValue = beefyItems.reduce((acc, item) =>
+    acc + Number(item.depositValue) + Number(item.rewardValue), 0)
+  const magpieValue = magpieItems.reduce((acc, item) => {
     return acc + Number(item.depositValue) + Number(item.rewardValue)
   }, 0)
-
-  const eulerItems = await getEulerInfo(walletAddress)
   const eulerMEVUSDCeValue = eulerItems
     .filter(item => {
       return item.address === '0x196F3C7443E940911EE2Bb88e019Fd71400349D9'
@@ -41,11 +44,6 @@ export const getPortfolioMetrics = async (
       return item.address === '0x3D9e5462A940684073EED7e4a13d19AE0Dcd13bc'
     })
     .reduce((acc, item) => acc + Number(item.depositValue) + Number(item.rewardValue), 0)
-
-  const magpieInfo = await getMagpieInfo(walletAddress)
-  const magpieValue = magpieInfo.reduce((acc, item) => {
-    return acc + Number(item.depositValue) + Number(item.rewardValue)
-  }, 0)
 
   const items = [
     {
@@ -84,12 +82,12 @@ export const getPortfolioMetrics = async (
     }
   ]
 
-  const totalValueUSD = items.reduce((acc, item) => {
-    return acc + item.value
-  }, 0)
+  const totalValueUSD = items.reduce((acc, item) =>
+    acc + item.value, 0)
 
   return {
     totalValueUSD,
-    items
+    items,
+    portfolioItems
   }
 }
