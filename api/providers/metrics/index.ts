@@ -29,10 +29,18 @@ export const getPortfolioMetrics = async (
     return acc + Number(item.depositValue) + Number(item.rewardValue)
   }, 0)
 
-  const eulerMEVUSDCe = await getEulerInfo(walletAddress, '0x196F3C7443E940911EE2Bb88e019Fd71400349D9')
-  const eulerMEVUSDCeValue = eulerMEVUSDCe.reduce((acc, item) => {
-    return acc + Number(item.depositValue) + Number(item.rewardValue)
-  }, 0)
+  const eulerItems = await getEulerInfo(walletAddress)
+  const eulerMEVUSDCeValue = eulerItems
+    .filter(item => {
+      return item.address === '0x196F3C7443E940911EE2Bb88e019Fd71400349D9'
+    })
+    .reduce((acc, item) => acc + Number(item.depositValue) + Number(item.rewardValue), 0)
+
+  const eulerRe7Value = eulerItems
+    .filter(item => {
+      return item.address === '0x3D9e5462A940684073EED7e4a13d19AE0Dcd13bc'
+    })
+    .reduce((acc, item) => acc + Number(item.depositValue) + Number(item.rewardValue), 0)
 
   const magpieInfo = await getMagpieInfo(walletAddress)
   const magpieValue = magpieInfo.reduce((acc, item) => {
@@ -61,6 +69,12 @@ export const getPortfolioMetrics = async (
       name: 'MEV USDC.e',
       value: eulerMEVUSDCeValue,
       link: 'https://app.euler.finance/vault/0x196F3C7443E940911EE2Bb88e019Fd71400349D9?network=sonic'
+    },
+    {
+      platform: 'Euler',
+      name: 'Re7 USDC.e',
+      value: eulerRe7Value,
+      link: 'https://app.euler.finance/vault/0x3D9e5462A940684073EED7e4a13d19AE0Dcd13bc?network=sonic'
     },
     {
       platform: 'Magpie',
