@@ -34,6 +34,7 @@ export interface PortfolioSnapshotItem {
 export interface PortfolioSnapshotData {
   totalValueUSD: number
   items: Array<PortfolioSnapshotItem>
+  portfolioItems: PortfolioItem[]
 }
 
 export interface PortfolioSnapshot {

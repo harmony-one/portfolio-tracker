@@ -222,24 +222,3 @@ export interface PositionReward {
   amount: string
   value: string
 }
-
-export interface WalletHistoryItem {
-  time: string
-  type: string
-  amount: string
-  value: string
-  totalSonicValue: string
-  totalUsdValue: string
-}
-
-export interface PortfolioSnapshotDataItem {
-  platform: string
-  name: string
-  value: number
-  link: string
-}
-
-export interface PortfolioSnapshotData {
-  totalValueUSD: number
-  items: PortfolioSnapshotDataItem[]
-}

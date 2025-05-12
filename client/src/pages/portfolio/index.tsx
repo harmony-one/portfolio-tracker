@@ -1,16 +1,28 @@
 import {Box, Text} from "grommet";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {PortfolioSnapshot} from "../../types.ts";
 import {appConfig} from "../../config.ts";
 import {getPortfolioSnapshots} from "../../api";
 import {TradingViewChart} from "./chart";
 import {MetricsTable} from "./MetricsTable.tsx";
 import { ExportOutlined } from '@ant-design/icons'
+import {Button} from "antd";
+import {arrayToTSV} from "../../utils.ts";
+import moment from "moment";
 
 export const PortfolioPage = () => {
   const [_, setInProgress] = useState(false);
   const [walletAddress] = useState(appConfig.defaultWalletAddress)
   const [portfolioSnapshots, setPortfolioSnapshots] = useState<PortfolioSnapshot[]>([]);
+
+  const latestPortfolioItems = useMemo(() => {
+    if(portfolioSnapshots.length > 0) {
+      if(portfolioSnapshots[0].data.portfolioItems) {
+        return portfolioSnapshots[0].data.portfolioItems
+      }
+    }
+    return []
+  }, [portfolioSnapshots])
 
   useEffect(() => {
     loadSnapshots()
@@ -21,13 +33,36 @@ export const PortfolioPage = () => {
     try {
       const items = await getPortfolioSnapshots({
         walletAddress: walletAddress.toLowerCase(),
-        limit: 100
+        limit: 1000
       })
       setPortfolioSnapshots(items)
+      console.log('Loaded snapshots: ', items)
     } catch (e) {
       console.error('Failed to load snapshots', e)
     }
     setInProgress(false)
+  }
+
+  const onExportClicked = () => {
+    try {
+      console.log('Export items:', latestPortfolioItems)
+      const tsvContent = arrayToTSV(latestPortfolioItems)
+      const blob = new Blob([tsvContent], { type: "text/tab-separated-values" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const currentDate = moment().format('YYYY-MM-DD_HH-mm')
+      link.download = `${currentDate}-portfolio-${walletAddress}.tsv`
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Failed to export', e)
+    }
   }
 
   return <Box pad={'16px 32px'}>
@@ -48,6 +83,15 @@ export const PortfolioPage = () => {
             <ExportOutlined style={{ color: '#1677ff' }} />
           </Box>
         </Box>
+      </Box>
+      <Box width={'200px'} margin={{ top: '16px' }}>
+        <Button
+          type={'primary'}
+          disabled={latestPortfolioItems.length === 0}
+          onClick={() => {
+            onExportClicked()
+          }}
+        >Download TSV</Button>
       </Box>
     </Box>
     <Box margin={{ top: '16px'}}>

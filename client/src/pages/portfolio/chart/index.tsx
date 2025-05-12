@@ -35,7 +35,6 @@ export const TradingViewChart = (props: {
     const chartContainerRef = useRef<HTMLDivElement>(null);
 
     const onCrosshairMove = (param: any, series: ISeriesApi<'Line'>) => {
-        console.log('param', param)
         const newTooltipState = getTooltipState(
           chartContainerRef,
           param,
@@ -165,7 +164,7 @@ export const TradingViewChart = (props: {
                                         {tooltip.items
                                           .filter(item => item.value > 0)
                                           .map((item) => {
-                                            return <Text key={item.platform}>
+                                            return <Text key={item.platform + item.name}>
                                                 {item.platform} {item.name}: {item.value}
                                             </Text>
                                         })}
