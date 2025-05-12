@@ -9,7 +9,7 @@ import {
   roundToSignificantDigits,
 } from "../../helpers";
 import moment from "moment";
-import { getEulerMerklRewards } from "../../api/euler-api";
+// import { getMerklRewards } from "../../api/euler-api";
 import EulerEVaultABI from "../../abi/EulerEVault.json";
 import FiatTokenV2_ABI from "../../abi/FiatTokenV2_2_Euler.json";
 
@@ -31,7 +31,7 @@ export const getEulerInfo = async (walletAddress: string) => {
 
   const currentBlockNumber = await provider.getBlockNumber();
 
-  const merklRewards = await getEulerMerklRewards(walletAddress);
+  // const merklRewards = await getMerklRewards(walletAddress);
 
   const vaultPromises = vaultArray.map(async (vault) => {
     const vaultContract = new ethers.Contract(vault.address, EulerEVaultABI, provider);
@@ -93,15 +93,15 @@ export const getEulerInfo = async (walletAddress: string) => {
         let rewardAmount1 = "0";
         let rewardValue1 = "0";
 
-        if (merklRewards.length > 0) {
-          const [baseReward] = merklRewards;
-          const rewardDecimals = baseReward.reward.decimals;
-          rewardAsset1 = baseReward.reward.symbol;
-          rewardAmount1 = new Decimal(baseReward.accumulated)
-            .div(10 ** rewardDecimals)
-            .toString();
-          rewardValue1 = String(Number(rewardAmount1) * baseReward.tokenPrice);
-        }
+        // if (merklRewards.length > 0) {
+        //   const [baseReward] = merklRewards;
+        //   const rewardDecimals = baseReward.reward.decimals;
+        //   rewardAsset1 = baseReward.reward.symbol;
+        //   rewardAmount1 = new Decimal(baseReward.accumulated)
+        //     .div(10 ** rewardDecimals)
+        //     .toString();
+        //   rewardValue1 = String(Number(rewardAmount1) * baseReward.tokenPrice);
+        // }
 
         const depositBlockNumber = firstDeposit
           ? firstDeposit.blockNumber

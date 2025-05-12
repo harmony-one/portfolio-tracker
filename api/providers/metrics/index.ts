@@ -2,6 +2,8 @@ import {getPendlePositions} from "../../api/pendle";
 import {getBeefyInfo} from "../beefy";
 import {getEulerInfo} from "../euler";
 import {getMagpieInfo} from "../magpie";
+import {getMerklRewards} from "../../api/euler-api";
+import Decimal from "decimal.js";
 
 const calculateCAGR = (
   start: number,
@@ -45,6 +47,17 @@ export const getPortfolioMetrics = async (
     })
     .reduce((acc, item) => acc + Number(item.depositValue) + Number(item.rewardValue), 0)
 
+  const merklRewards = await getMerklRewards(walletAddress)
+  const merklValue = merklRewards.reduce((acc, item) => {
+    const { reward, accumulated, tokenPrice } = item
+    const rewardDecimals = reward.decimals;
+    const amount = new Decimal(accumulated)
+      .div(10 ** rewardDecimals)
+      .toNumber();
+    const rewardValueUSD = amount * tokenPrice
+    return acc + rewardValueUSD
+  }, 0)
+
   const items = [
     {
       platform: 'Pendle',
@@ -79,6 +92,12 @@ export const getPortfolioMetrics = async (
       name: 'Aave aUSDC',
       value: magpieValue,
       link: 'https://www.pendle.magpiexyz.io/stake/0x3F5EA53d1160177445B1898afbB16da111182418'
+    },
+    {
+      platform: 'Merkl',
+      name: 'Rewards',
+      value: merklValue,
+      link: `https://app.merkl.xyz/users/${walletAddress}`
     }
   ]
 
