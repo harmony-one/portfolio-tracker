@@ -5,6 +5,7 @@ import { darkTheme } from './theme';
 import { Box, Text } from 'grommet';
 import moment from 'moment';
 import { defaultTooltipState, getTooltipState, TooltipContainer, TradingViewTooltipState } from './helpers.tsx';
+import Decimal from "decimal.js";
 
 export const TradingViewChart = (props: {
     height: number
@@ -123,7 +124,7 @@ export const TradingViewChart = (props: {
         return {
             ...tooltipState,
             // title: 'Total value',
-            value: `Total: ${tooltipState.value}`,
+            value: `Total: ${new Decimal(tooltipState.value || 0).toDecimalPlaces(2).toString()}`,
         }
     }, [tooltipState])
 
@@ -165,7 +166,7 @@ export const TradingViewChart = (props: {
                                           .filter(item => item.value > 0)
                                           .map((item) => {
                                             return <Text key={item.platform + item.name}>
-                                                {item.platform} {item.name}: {item.value}
+                                                {item.platform} {item.name}: {new Decimal(item.value).toDecimalPlaces(2).toString()}
                                             </Text>
                                         })}
                                     </Box>

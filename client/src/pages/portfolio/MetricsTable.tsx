@@ -81,7 +81,7 @@ export const MetricsTable = (props: {
       return [
         {
           key: lastSnapshot.id,
-          totalValue: lastSnapshot.data.totalValueUSD.toString(),
+          totalValue: new Decimal(lastSnapshot.data.totalValueUSD).toDecimalPlaces(2).toString(),
           cagrValue: new Decimal(cagrValue).toSD(3).toString(),
           volatility: `${new Decimal(volatility).toSD(3).toString()}%`,
           // maxDrawdown: `${new Decimal(maxDrawdown).toSD(3).toString()}%`,
