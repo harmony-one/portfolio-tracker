@@ -36,6 +36,35 @@ function calculateVolatility(prices: number[]): number {
   return Math.sqrt(variance);
 }
 
+/**
+ * Calculates the maximum drawdown (MDD) for a series of portfolio values.
+ * MDD is the largest peak-to-trough percentage decline.
+ * @param values Array of portfolio values over time
+ * @returns Maximum drawdown as a decimal (e.g., 0.1818 for 18.18%)
+ */
+function calculateMaxDrawdown(values: number[]): number {
+  if (values.length < 2) {
+    return 0;
+  }
+
+  let peak: number = values[0];
+  let maxDrawdown: number = 0;
+
+  for (const value of values) {
+    if (value > peak) {
+      peak = value;
+    }
+
+    const drawdown: number = (peak - value) / peak;
+
+    if (drawdown > maxDrawdown) {
+      maxDrawdown = drawdown;
+    }
+  }
+
+  return maxDrawdown;
+}
+
 export const MetricsTable = (props: {
   snapshots: PortfolioSnapshot[]
 }) => {
@@ -57,11 +86,11 @@ export const MetricsTable = (props: {
       dataIndex: 'volatility',
       key: 'volatility',
     },
-    // {
-    //   title: 'Max drawdown',
-    //   dataIndex: 'maxDrawdown',
-    //   key: 'maxDrawdown',
-    // },
+    {
+      title: 'Max Drawdown',
+      dataIndex: 'maxDrawdown',
+      key: 'maxDrawdown',
+    },
   ];
 
   const dataSource = useMemo(() => {
@@ -77,14 +106,14 @@ export const MetricsTable = (props: {
 
       const values = snapshots.map(item => item.data.totalValueUSD)
       const volatility = calculateVolatility(values)
-      // const maxDrawdown = calculateMaxDrawdown(values)
+      const maxDrawdown = calculateMaxDrawdown(values)
       return [
         {
           key: lastSnapshot.id,
           totalValue: new Decimal(lastSnapshot.data.totalValueUSD).toDecimalPlaces(2).toString(),
           cagrValue: new Decimal(cagrValue).toSD(3).toString(),
           volatility: `${new Decimal(volatility).toSD(3).toString()}%`,
-          // maxDrawdown: `${new Decimal(maxDrawdown).toSD(3).toString()}%`,
+          maxDrawdown: `${new Decimal(maxDrawdown).mul(100).toSD(3).toString()}%`,
         },
       ]
     }
