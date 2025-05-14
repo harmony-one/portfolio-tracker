@@ -82,14 +82,14 @@ export const MetricsTable = (props: {
       key: 'cagrValue',
     },
     {
-      title: 'Volatility',
-      dataIndex: 'volatility',
-      key: 'volatility',
-    },
-    {
       title: 'Max Drawdown',
       dataIndex: 'maxDrawdown',
       key: 'maxDrawdown',
+    },
+    {
+      title: 'Volatility',
+      dataIndex: 'volatility',
+      key: 'volatility',
     },
   ];
 
