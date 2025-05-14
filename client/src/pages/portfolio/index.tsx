@@ -5,13 +5,13 @@ import {appConfig} from "../../config.ts";
 import {getPortfolioSnapshots} from "../../api";
 import {TradingViewChart} from "./chart";
 import {MetricsTable} from "./MetricsTable.tsx";
-import { ExportOutlined } from '@ant-design/icons'
-import {Button} from "antd";
+import {ExportOutlined} from '@ant-design/icons'
+import {Button, Card, Statistic} from "antd";
 import {arrayToTSV} from "../../utils.ts";
 import moment from "moment";
 
 export const PortfolioPage = () => {
-  const [_, setInProgress] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [walletAddress] = useState(appConfig.defaultWalletAddress)
   const [portfolioSnapshots, setPortfolioSnapshots] = useState<PortfolioSnapshot[]>([]);
 
@@ -29,7 +29,7 @@ export const PortfolioPage = () => {
   }, []);
 
   const loadSnapshots = async () => {
-    setInProgress(true)
+    setIsLoading(true)
     try {
       const items = await getPortfolioSnapshots({
         walletAddress: walletAddress.toLowerCase(),
@@ -39,8 +39,9 @@ export const PortfolioPage = () => {
       console.log('Loaded snapshots: ', items)
     } catch (e) {
       console.error('Failed to load snapshots', e)
+    } finally {
+      setIsLoading(false)
     }
-    setInProgress(false)
   }
 
   const onExportClicked = () => {
@@ -64,6 +65,24 @@ export const PortfolioPage = () => {
       console.error('Failed to export', e)
     }
   }
+
+  const valueChange = useMemo(() => {
+    if(portfolioSnapshots.length > 0) {
+      const sortedSnapshots = portfolioSnapshots
+        .sort((a, b) => {
+          return moment(b.createdAt).unix() - moment(a.createdAt).unix();
+        })
+      const prevValue = sortedSnapshots
+        .find(item => {
+          const lastDayTimestamp = moment().subtract(24, 'hours').unix()
+          return moment(item.createdAt).unix() <= lastDayTimestamp
+        })
+      if(prevValue) {
+        return sortedSnapshots[0].data.totalValueUSD - prevValue.data.totalValueUSD
+      }
+    }
+    return 0
+  }, [portfolioSnapshots])
 
   return <Box pad={'16px 32px'}>
     <Box>
@@ -94,12 +113,33 @@ export const PortfolioPage = () => {
         >Download TSV</Button>
       </Box>
     </Box>
-    <Box margin={{ top: '16px'}}>
-      <MetricsTable snapshots={portfolioSnapshots}/>
-    </Box>
-    <Box margin={{ top: '32px' }}>
-      <Text size={'16px'}>Performance</Text>
-      <TradingViewChart height={300} snapshots={portfolioSnapshots} />
-    </Box>
+    {!isLoading &&
+        <Box margin={{ top: '16px'}}>
+            <MetricsTable snapshots={portfolioSnapshots}/>
+        </Box>
+    }
+    {!isLoading &&
+        <Box margin={{ top: '32px' }}>
+            <Text size={'16px'}>Performance</Text>
+            <Box width={'240px'} margin={{ top: '16px' }}>
+                <Card variant="borderless">
+                    <Statistic
+                        title="24H change"
+                        value={valueChange}
+                        precision={2}
+                        valueStyle={{ color: valueChange > 0
+                            ? '#3f8600'
+                            : valueChange === 0
+                              ? ''
+                              : '#cf1322'
+                        }}
+                        prefix={valueChange > 0 ? '+' : ''}
+                        suffix="USD"
+                    />
+                </Card>
+            </Box>
+            <TradingViewChart height={300} snapshots={portfolioSnapshots} />
+        </Box>
+    }
   </Box>
 }
