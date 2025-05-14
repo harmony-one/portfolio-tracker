@@ -1,0 +1,246 @@
+export const calculateCAGR = (
+  start: number,
+  end: number,
+  periods: number,
+) => {
+  return (Math.pow((end / start), 1 / periods) - 1) * 100
+}
+
+export const calculateVolatility = (prices: number[]) => {
+  if (!prices || prices.length === 0) {
+    return 0;
+  }
+
+  // Calculate mean
+  const mean = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+
+  // Calculate variance
+  const variance = prices.reduce((sum, price) => {
+    const diff = price - mean;
+    return sum + diff * diff;
+  }, 0) / prices.length;
+
+  return Math.sqrt(variance);
+}
+
+/**
+ * Calculates the maximum drawdown (MDD) for a series of portfolio values.
+ * MDD is the largest peak-to-trough percentage decline.
+ * @param values Array of portfolio values over time
+ * @returns Maximum drawdown as a decimal (e.g., 0.1818 for 18.18%)
+ */
+export const calculateMaxDrawdown = (values: number[]) => {
+  if (values.length < 2) {
+    return 0;
+  }
+
+  let peak: number = values[0];
+  let maxDrawdown: number = 0;
+
+  for (const value of values) {
+    if (value > peak) {
+      peak = value;
+    }
+
+    const drawdown: number = (peak - value) / peak;
+
+    if (drawdown > maxDrawdown) {
+      maxDrawdown = drawdown;
+    }
+  }
+
+  return maxDrawdown;
+}
+
+/**
+ * Calculates the Sharpe Ratio for an array of portfolio values.
+ * Assumes daily data and annualizes using 252 trading days.
+ * @param values Array of portfolio values over time
+ * @param riskFreeRate Daily risk-free rate (default 0)
+ * @returns Annualized Sharpe Ratio, or 0 if insufficient data
+ */
+export const calculateSharpeRatio = (values: number[], riskFreeRate: number = 0)  => {
+  if (values.length < 2) {
+    return 0;
+  }
+
+  // Calculate returns: (current - previous) / previous
+  const returns: number[] = [];
+  for (let i = 1; i < values.length; i++) {
+    const prevValue = values[i - 1];
+    const currentValue = values[i];
+    if (prevValue === 0) continue; // Avoid division by zero
+    returns.push((currentValue - prevValue) / prevValue);
+  }
+
+  if (returns.length === 0) {
+    return 0;
+  }
+
+  // Calculate excess returns
+  const excessReturns: number[] = returns.map(r => r - riskFreeRate);
+
+  // Calculate mean of excess returns
+  const meanExcessReturn: number = excessReturns.reduce((sum, val) => sum + val, 0) / excessReturns.length;
+
+  // Calculate standard deviation of excess returns
+  const variance: number = excessReturns.reduce((sum, val) => sum + Math.pow(val - meanExcessReturn, 2), 0) / excessReturns.length;
+  const stdDev: number = Math.sqrt(variance);
+
+  // Avoid division by zero
+  if (stdDev === 0) {
+    return 0;
+  }
+
+  // Calculate daily Sharpe Ratio and annualize (252 trading days)
+  const sharpeRatio: number = meanExcessReturn / stdDev;
+  const annualizedSharpe: number = sharpeRatio * Math.sqrt(252);
+
+  return annualizedSharpe;
+}
+
+/**
+ * Calculates the Sortino Ratio for an array of portfolio values.
+ * Assumes daily data and annualizes using 252 trading days.
+ * @param values Array of portfolio values over time
+ * @param riskFreeRate Daily risk-free rate (default 0)
+ * @param targetReturn Target return for downside risk (default 0)
+ * @returns Annualized Sortino Ratio, or 0 if insufficient data
+ */
+export const calculateSortinoRatio = (values: number[], riskFreeRate: number = 0, targetReturn: number = 0) => {
+  if (values.length < 2) {
+    return 0;
+  }
+
+  // Calculate returns: (current - previous) / previous
+  const returns: number[] = [];
+  for (let i = 1; i < values.length; i++) {
+    const prevValue = values[i - 1];
+    const currentValue = values[i];
+    if (prevValue === 0) continue; // Avoid division by zero
+    returns.push((currentValue - prevValue) / prevValue);
+  }
+
+  if (returns.length === 0) {
+    return 0;
+  }
+
+  // Calculate excess returns
+  const excessReturns: number[] = returns.map(r => r - riskFreeRate);
+
+  // Calculate mean of excess returns
+  const meanExcessReturn: number = excessReturns.reduce((sum, val) => sum + val, 0) / excessReturns.length;
+
+  // Calculate downside deviation
+  const downsideReturns: number[] = returns.filter(r => r < targetReturn);
+  const downsideSquared: number = downsideReturns.reduce((sum, r) => sum + Math.pow(r - targetReturn, 2), 0);
+  const downsideDeviation: number = Math.sqrt(downsideSquared / returns.length); // Use total periods for consistency
+
+  // Avoid division by zero
+  if (downsideDeviation === 0) {
+    return 0;
+  }
+
+  // Calculate daily Sortino Ratio and annualize (252 trading days)
+  const sortinoRatio: number = meanExcessReturn / downsideDeviation;
+  const annualizedSortino: number = sortinoRatio * Math.sqrt(252);
+
+  return annualizedSortino;
+}
+
+/**
+ * Calculates the Ulcer Index for an array of portfolio values.
+ * Measures the severity and duration of drawdowns.
+ * @param values Array of portfolio values over time
+ * @returns Ulcer Index as a decimal (e.g., 0.1 for 10%)
+ */
+export const calculateUlcerIndex = (values: number[]) => {
+  if (values.length < 1) {
+    return 0;
+  }
+
+  let peak: number = values[0];
+  const drawdownsSquared: number[] = [];
+
+  for (const value of values) {
+    // Update peak if current value is higher
+    if (value > peak) {
+      peak = value;
+    }
+
+    // Calculate drawdown: (peak - value) / peak
+    const drawdown: number = peak > 0 ? (peak - value) / peak : 0;
+    drawdownsSquared.push(drawdown * drawdown);
+  }
+
+  // Calculate mean of squared drawdowns
+  const meanSquaredDrawdown: number = drawdownsSquared.reduce((sum, val) => sum + val, 0) / values.length;
+
+  // Ulcer Index is the square root of the mean squared drawdown
+  const ulcerIndex: number = Math.sqrt(meanSquaredDrawdown);
+
+  return ulcerIndex;
+}
+
+/**
+ * Calculates the Ulcer Performance Index (UPI) for an array of portfolio values.
+ * Measures annualized excess return per unit of Ulcer Index (downside risk).
+ * Assumes daily data and annualizes using 252 trading days.
+ * @param values Array of portfolio values over time
+ * @param riskFreeRate Daily risk-free rate (default 0)
+ * @returns Ulcer Performance Index, or 0 if insufficient data
+ */
+export const calculateUlcerPerformanceIndex = (values: number[], riskFreeRate: number = 0) => {
+  if (values.length < 2) {
+    return 0;
+  }
+
+  // Calculate returns: (current - previous) / previous
+  const returns: number[] = [];
+  for (let i = 1; i < values.length; i++) {
+    const prevValue = values[i - 1];
+    const currentValue = values[i];
+    if (prevValue === 0) continue; // Avoid division by zero
+    returns.push((currentValue - prevValue) / prevValue);
+  }
+
+  if (returns.length === 0) {
+    return 0;
+  }
+
+  // Calculate average return
+  const meanReturn: number = returns.reduce((sum, val) => sum + val, 0) / returns.length;
+
+  // Calculate annualized excess return
+  const excessReturn: number = meanReturn - riskFreeRate;
+  const annualizedExcessReturn: number = excessReturn * 252;
+
+  // Calculate Ulcer Index
+  let peak: number = values[0];
+  const drawdownsSquared: number[] = [];
+
+  for (const value of values) {
+    // Update peak if current value is higher
+    if (value > peak) {
+      peak = value;
+    }
+
+    // Calculate drawdown: (peak - value) / peak
+    const drawdown: number = peak > 0 ? (peak - value) / peak : 0;
+    drawdownsSquared.push(drawdown * drawdown);
+  }
+
+  // Calculate mean of squared drawdowns and Ulcer Index
+  const meanSquaredDrawdown: number = drawdownsSquared.reduce((sum, val) => sum + val, 0) / values.length;
+  const ulcerIndex: number = Math.sqrt(meanSquaredDrawdown);
+
+  // Avoid division by zero
+  if (ulcerIndex === 0) {
+    return 0;
+  }
+
+  // Calculate UPI
+  const upi: number = annualizedExcessReturn / ulcerIndex;
+
+  return upi;
+}

@@ -3,66 +3,24 @@ import {Box} from "grommet";
 import {Table, TableProps} from "antd";
 import {useMemo} from "react";
 import Decimal from "decimal.js";
+import {
+  calculateCAGR,
+  calculateSharpeRatio,
+  calculateSortinoRatio,
+  calculateUlcerIndex, calculateUlcerPerformanceIndex,
+  calculateVolatility
+} from "./metrics-helpers.ts";
+import {calculateMaxDrawdown} from "../../utils.ts";
 
 interface DataType {
   totalValue: string
   cagrValue: string
   volatility: string
-  // maxDrawdown: string
-}
-
-const calculateCAGR = (
-  start: number,
-  end: number,
-  periods: number,
-) => {
-  return (Math.pow((end / start), 1 / periods) - 1) * 100
-}
-
-function calculateVolatility(prices: number[]): number {
-  if (!prices || prices.length === 0) {
-    return 0;
-  }
-
-  // Calculate mean
-  const mean = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-
-  // Calculate variance
-  const variance = prices.reduce((sum, price) => {
-    const diff = price - mean;
-    return sum + diff * diff;
-  }, 0) / prices.length;
-
-  return Math.sqrt(variance);
-}
-
-/**
- * Calculates the maximum drawdown (MDD) for a series of portfolio values.
- * MDD is the largest peak-to-trough percentage decline.
- * @param values Array of portfolio values over time
- * @returns Maximum drawdown as a decimal (e.g., 0.1818 for 18.18%)
- */
-function calculateMaxDrawdown(values: number[]): number {
-  if (values.length < 2) {
-    return 0;
-  }
-
-  let peak: number = values[0];
-  let maxDrawdown: number = 0;
-
-  for (const value of values) {
-    if (value > peak) {
-      peak = value;
-    }
-
-    const drawdown: number = (peak - value) / peak;
-
-    if (drawdown > maxDrawdown) {
-      maxDrawdown = drawdown;
-    }
-  }
-
-  return maxDrawdown;
+  maxDrawdown: string
+  sharpe: string
+  sortino: string
+  ulcer: string
+  upi: string
 }
 
 export const MetricsTable = (props: {
@@ -91,6 +49,26 @@ export const MetricsTable = (props: {
       dataIndex: 'volatility',
       key: 'volatility',
     },
+    {
+      title: 'Sharpe',
+      dataIndex: 'sharpe',
+      key: 'sharpe',
+    },
+    {
+      title: 'Sortino',
+      dataIndex: 'sortino',
+      key: 'sortino',
+    },
+    {
+      title: 'Ulcer index',
+      dataIndex: 'ulcer',
+      key: 'ulcer',
+    },
+    {
+      title: 'UPI',
+      dataIndex: 'upi',
+      key: 'upi',
+    },
   ];
 
   const dataSource = useMemo(() => {
@@ -105,15 +83,24 @@ export const MetricsTable = (props: {
       )
 
       const values = snapshots.map(item => item.data.totalValueUSD)
-      const volatility = calculateVolatility(values)
-      const maxDrawdown = calculateMaxDrawdown(values)
       return [
         {
           key: lastSnapshot.id,
           totalValue: new Decimal(lastSnapshot.data.totalValueUSD).toDecimalPlaces(2).toString(),
           cagrValue: new Decimal(cagrValue).toSD(3).toString(),
-          volatility: `${new Decimal(volatility).toSD(3).toString()}%`,
-          maxDrawdown: `${new Decimal(maxDrawdown).mul(100).toSD(3).toString()}%`,
+          volatility: `${new Decimal(calculateVolatility(values))
+            .toSD(3).toString()}%`,
+          maxDrawdown: `${new Decimal(calculateMaxDrawdown(values))
+            .mul(100)
+            .toSD(3).toString()}%`,
+          sharpe: `${new Decimal(calculateSharpeRatio(values))
+            .toSD(3).toString()}`,
+          sortino: `${new Decimal(calculateSortinoRatio(values))
+            .toSD(3).toString()}`,
+          ulcer: `${new Decimal(calculateUlcerIndex(values))
+            .toSD(3).toString()}`,
+          upi: `${new Decimal(calculateUlcerPerformanceIndex(values))
+            .toSD(3).toString()}`,
         },
       ]
     }
