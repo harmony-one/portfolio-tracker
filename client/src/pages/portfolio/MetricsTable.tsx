@@ -51,26 +51,26 @@ export const MetricsTable = (props: {
       dataIndex: 'volatility',
       key: 'volatility',
     },
-    {
-      title: 'Sharpe',
-      dataIndex: 'sharpe',
-      key: 'sharpe',
-    },
-    {
-      title: 'Sortino',
-      dataIndex: 'sortino',
-      key: 'sortino',
-    },
-    {
-      title: 'Ulcer index',
-      dataIndex: 'ulcer',
-      key: 'ulcer',
-    },
-    {
-      title: 'UPI',
-      dataIndex: 'upi',
-      key: 'upi',
-    },
+    // {
+    //   title: 'Sharpe',
+    //   dataIndex: 'sharpe',
+    //   key: 'sharpe',
+    // },
+    // {
+    //   title: 'Sortino',
+    //   dataIndex: 'sortino',
+    //   key: 'sortino',
+    // },
+    // {
+    //   title: 'Ulcer index',
+    //   dataIndex: 'ulcer',
+    //   key: 'ulcer',
+    // },
+    // {
+    //   title: 'UPI',
+    //   dataIndex: 'upi',
+    //   key: 'upi',
+    // },
   ];
 
   const dataSource = useMemo(() => {
@@ -105,19 +105,19 @@ export const MetricsTable = (props: {
           cagrValue: `${new Decimal(cagrValue)
             .toSD(3)
             .toString()}%`,
-          volatility: `${new Decimal(calculateVolatility(values))
+          volatility: `${new Decimal(calculateVolatility([...values]))
             .mul(100)
             .toSD(3).toString()}%`,
-          maxDrawdown: `${new Decimal(calculateMaxDrawdown(values))
+          maxDrawdown: `${new Decimal(calculateMaxDrawdown([...values]))
             .mul(100)
             .toSD(3).toString()}%`,
-          sharpe: `${new Decimal(calculateSharpeRatio(values))
+          sharpe: `${new Decimal(calculateSharpeRatio([...values]))
             .toSD(3).toString()}`,
-          sortino: `${new Decimal(calculateSortinoRatio(values))
+          sortino: `${new Decimal(calculateSortinoRatio([...values]))
             .toSD(3).toString()}`,
-          ulcer: `${new Decimal(calculateUlcerIndex(values))
+          ulcer: `${new Decimal(calculateUlcerIndex([...values]))
             .toSD(3).toString()}`,
-          upi: `${new Decimal(calculateUlcerPerformanceIndex(values))
+          upi: `${new Decimal(calculateUlcerPerformanceIndex([...values]))
             .toSD(3).toString()}`,
         },
       ]

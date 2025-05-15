@@ -69,51 +69,43 @@ export const calculateMaxDrawdown = (values: number[]) => {
   return maxDrawdown;
 }
 
-/**
- * Calculates the Sharpe Ratio for an array of portfolio values.
- * Assumes daily data and annualizes using 252 trading days.
- * @param values Array of portfolio values over time
- * @param riskFreeRate Daily risk-free rate (default 0)
- * @returns Annualized Sharpe Ratio, or 0 if insufficient data
- */
-export const calculateSharpeRatio = (values: number[], riskFreeRate: number = 0)  => {
-  if (values.length < 2) {
-    return 0;
+export const calculateSharpeRatio = (
+  portfolioValues: number[],
+  riskFreeRate: number = 0
+)  => {
+  if (portfolioValues.length < 2) {
+    console.error("At least two values are required to calculate Sharpe Ratio");
+    return 0
   }
 
-  // Calculate returns: (current - previous) / previous
+  // Calculate daily returns
   const returns: number[] = [];
-  for (let i = 1; i < values.length; i++) {
-    const prevValue = values[i - 1];
-    const currentValue = values[i];
-    if (prevValue === 0) continue; // Avoid division by zero
-    returns.push((currentValue - prevValue) / prevValue);
+  for (let i = 1; i < portfolioValues.length; i++) {
+    returns.push((portfolioValues[i] - portfolioValues[i - 1]) / portfolioValues[i - 1]);
   }
 
-  if (returns.length === 0) {
-    return 0;
-  }
+  // Calculate average return
+  const avgReturn: number = returns.reduce((sum, ret) => sum + ret, 0) / returns.length;
 
-  // Calculate excess returns
-  const excessReturns: number[] = returns.map(r => r - riskFreeRate);
+  console.log('avgReturn', avgReturn)
+  // Calculate variance
+  const variance: number = returns.reduce((sum, ret) => {
+    return sum + Math.pow(ret - avgReturn, 2);
+  }, 0) / (returns.length - 1);
 
-  // Calculate mean of excess returns
-  const meanExcessReturn: number = excessReturns.reduce((sum, val) => sum + val, 0) / excessReturns.length;
-
-  // Calculate standard deviation of excess returns
-  const variance: number = excessReturns.reduce((sum, val) => sum + Math.pow(val - meanExcessReturn, 2), 0) / excessReturns.length;
-  const stdDev: number = Math.sqrt(variance);
+  // Calculate volatility (standard deviation)
+  const volatility: number = Math.sqrt(variance);
 
   // Avoid division by zero
-  if (stdDev === 0) {
-    return 0;
+  if (volatility === 0) {
+    console.error("Volatility is zero, cannot calculate Sharpe Ratio");
+    return 0
   }
 
-  // Calculate daily Sharpe Ratio and annualize (252 trading days)
-  const sharpeRatio: number = meanExcessReturn / stdDev;
-  const annualizedSharpe: number = sharpeRatio * Math.sqrt(252);
+  // Calculate Sharpe Ratio
+  const sharpeRatio: number = (avgReturn - riskFreeRate) / volatility;
 
-  return annualizedSharpe;
+  return sharpeRatio;
 }
 
 /**
