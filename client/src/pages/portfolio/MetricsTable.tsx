@@ -11,6 +11,7 @@ import {
   calculateVolatility
 } from "./metrics-helpers.ts";
 import {calculateMaxDrawdown} from "../../utils.ts";
+import moment from "moment";
 
 interface DataType {
   totalValue: string
@@ -73,20 +74,27 @@ export const MetricsTable = (props: {
 
   const dataSource = useMemo(() => {
     if(snapshots.length > 0) {
-      const firstSnapshot = snapshots[snapshots.length - 1];
-      const lastSnapshot = snapshots[0];
+      const values = snapshots
+        .sort((a, b) => {
+          return moment(b.createdAt).unix() - moment(a.createdAt).unix()
+        })
+        .map(item => item.data.totalValueUSD)
+
+      console.log('Sorted values:', values)
+
+      const firstValueUSD = values[values.length - 1]
+      const lastValueUSD = values[0]
 
       const cagrValue = calculateCAGR(
-        firstSnapshot.data.totalValueUSD,
-        lastSnapshot.data.totalValueUSD,
+        firstValueUSD,
+        lastValueUSD,
         snapshots.length
       )
 
-      const values = snapshots.map(item => item.data.totalValueUSD)
       return [
         {
-          key: lastSnapshot.id,
-          totalValue: new Decimal(lastSnapshot.data.totalValueUSD).toDecimalPlaces(2).toString(),
+          key: snapshots[0].id,
+          totalValue: new Decimal(lastValueUSD).toDecimalPlaces(2).toString(),
           cagrValue: `${new Decimal(cagrValue).toSD(3).toString()}%`,
           volatility: `${new Decimal(calculateVolatility(values))
             .toSD(3).toString()}%`,
