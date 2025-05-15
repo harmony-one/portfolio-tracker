@@ -5,6 +5,8 @@ import {DataSource} from "typeorm";
 import {PortfolioSnapshotEntity} from "./entities/portfolio.snapshot.entity";
 import {GetPortfolioSnapshotsDto} from "./dto/portfolio.dto";
 import {getPortfolioMetrics} from "../providers/metrics";
+import { FindOptionsWhere, MoreThan } from "typeorm"
+
 
 const cronJobName = 'update_job'
 
@@ -93,10 +95,18 @@ export class AppService {
   }
 
   public async getPortfolioSnapshots(dto: GetPortfolioSnapshotsDto) {
+    const where: FindOptionsWhere<PortfolioSnapshotEntity> = {}
+
+    if(dto.walletAddress) {
+      where.walletAddress = dto.walletAddress
+    }
+
+    if(dto.timestampFrom) {
+      where.createdAt = MoreThan(new Date(dto.timestampFrom));
+    }
+
     return await this.dataSource.manager.find(PortfolioSnapshotEntity, {
-      where: {
-        walletAddress: dto.walletAddress
-      },
+      where,
       take: dto.limit || 1000,
       skip: dto.offset || 0,
       order: {

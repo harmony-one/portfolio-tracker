@@ -222,3 +222,15 @@ export interface PositionReward {
   amount: string
   value: string
 }
+
+export interface PortfolioSnapshotItem {
+  platform: string
+  name: string
+  value: number
+}
+
+export interface PortfolioSnapshotData {
+  totalValueUSD: number
+  items: Array<PortfolioSnapshotItem>
+  portfolioItems: PortfolioItem[]
+}

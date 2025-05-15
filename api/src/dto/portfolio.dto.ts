@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {Transform, Type} from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import {IsNumber, IsOptional, IsString} from 'class-validator';
 
 export class GetPortfolioSnapshotsDto {
   @ApiProperty({ type: String, required: false })
@@ -9,6 +9,12 @@ export class GetPortfolioSnapshotsDto {
   @IsString()
   @IsOptional()
   walletAddress?: string;
+
+  @ApiProperty({ type: Number, required: false })
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  timestampFrom?: number;
 
   @ApiProperty({ type: Number, required: false, default: '1000' })
   @Type(() => String)
