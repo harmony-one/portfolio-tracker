@@ -32,6 +32,7 @@ export const PortfolioPage = () => {
     setIsLoading(true)
     try {
       const items = await getPortfolioSnapshots({
+        timestampFrom: 1746970265000, // Starting position May 11, 14:00 WEST time
         walletAddress: walletAddress.toLowerCase(),
         limit: 1000
       })

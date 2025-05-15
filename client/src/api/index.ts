@@ -7,10 +7,12 @@ const client = axios.create({
 
 export const getPortfolioSnapshots = async (params: {
   walletAddress: string
+  timestampFrom?: number
   limit?: number
 }) => {
   const { data } = await client.get<PortfolioSnapshot[]>(`/portfolioSnapshots`, {
     params: {
+      timestampFrom: params.timestampFrom,
       walletAddress: params.walletAddress,
       limit: params.limit || 100
     }
