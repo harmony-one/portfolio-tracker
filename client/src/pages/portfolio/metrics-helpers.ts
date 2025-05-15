@@ -7,20 +7,28 @@ export const calculateCAGR = (
 }
 
 export const calculateVolatility = (prices: number[]) => {
-  if (!prices || prices.length === 0) {
-    return 0;
+  if (prices.length < 2) {
+    return 0
   }
 
-  // Calculate mean
-  const mean = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+  // Calculate returns
+  const returns: number[] = [];
+  for (let i = 1; i < prices.length; i++) {
+    returns.push((prices[i] - prices[i - 1]) / prices[i - 1]);
+  }
+
+  // Calculate mean of returns
+  const meanReturn: number = returns.reduce((sum, ret) => sum + ret, 0) / returns.length;
 
   // Calculate variance
-  const variance = prices.reduce((sum, price) => {
-    const diff = price - mean;
-    return sum + diff * diff;
-  }, 0) / prices.length;
+  const variance: number = returns.reduce((sum, ret) => {
+    return sum + Math.pow(ret - meanReturn, 2);
+  }, 0) / (returns.length - 1);
 
-  return Math.sqrt(variance);
+  // Calculate standard deviation (volatility)
+  const volatility: number = Math.sqrt(variance);
+
+  return volatility;
 }
 
 /**

@@ -97,6 +97,7 @@ export const MetricsTable = (props: {
           totalValue: new Decimal(lastValueUSD).toDecimalPlaces(2).toString(),
           cagrValue: `${new Decimal(cagrValue).toSD(3).toString()}%`,
           volatility: `${new Decimal(calculateVolatility(values))
+            .mul(100)
             .toSD(3).toString()}%`,
           maxDrawdown: `${new Decimal(calculateMaxDrawdown(values))
             .mul(100)
