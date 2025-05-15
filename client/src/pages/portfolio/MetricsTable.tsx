@@ -7,10 +7,11 @@ import {
   calculateCAGR,
   calculateSharpeRatio,
   calculateSortinoRatio,
-  calculateUlcerIndex, calculateUlcerPerformanceIndex,
-  calculateVolatility
+  calculateUlcerIndex,
+  calculateUlcerPerformanceIndex,
+  calculateVolatility,
+  calculateMaxDrawdown
 } from "./metrics-helpers.ts";
-import {calculateMaxDrawdown} from "../../utils.ts";
 import moment from "moment";
 
 interface DataType {
