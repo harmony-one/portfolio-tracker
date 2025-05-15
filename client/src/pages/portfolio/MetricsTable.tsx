@@ -73,8 +73,8 @@ export const MetricsTable = (props: {
 
   const dataSource = useMemo(() => {
     if(snapshots.length > 0) {
-      const firstSnapshot = snapshots[snapshots.length - 1];
-      const lastSnapshot = snapshots[0]
+      const firstSnapshot = snapshots[0]
+      const lastSnapshot = snapshots[snapshots.length - 1];
 
       const cagrValue = calculateCAGR(
         firstSnapshot.data.totalValueUSD,
@@ -87,7 +87,7 @@ export const MetricsTable = (props: {
         {
           key: lastSnapshot.id,
           totalValue: new Decimal(lastSnapshot.data.totalValueUSD).toDecimalPlaces(2).toString(),
-          cagrValue: new Decimal(cagrValue).toSD(3).toString(),
+          cagrValue: `${new Decimal(cagrValue).toSD(3).toString()}%`,
           volatility: `${new Decimal(calculateVolatility(values))
             .toSD(3).toString()}%`,
           maxDrawdown: `${new Decimal(calculateMaxDrawdown(values))
