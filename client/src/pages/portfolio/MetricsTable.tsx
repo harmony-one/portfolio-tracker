@@ -73,29 +73,37 @@ export const MetricsTable = (props: {
   ];
 
   const dataSource = useMemo(() => {
-    if(snapshots.length > 0) {
-      const values = snapshots
+    if(snapshots.length > 1) {
+      const sortedSnapshots = snapshots
         .sort((a, b) => {
           return moment(b.createdAt).unix() - moment(a.createdAt).unix()
         })
+
+      const values = sortedSnapshots
         .map(item => item.data.totalValueUSD)
 
       console.log('Sorted values:', values)
 
-      const firstValueUSD = values[values.length - 1]
-      const lastValueUSD = values[0]
+      const firstSnapshot = sortedSnapshots[0]
+      const lastSnapshot = sortedSnapshots[sortedSnapshots.length - 1]
+
+      const hoursCount = moment(firstSnapshot.createdAt)
+        .diff(moment(lastSnapshot.createdAt), 'hours')
 
       const cagrValue = calculateCAGR(
-        firstValueUSD,
-        lastValueUSD,
-        snapshots.length
+        values,
+        hoursCount / 24
       )
 
       return [
         {
           key: snapshots[0].id,
-          totalValue: new Decimal(lastValueUSD).toDecimalPlaces(2).toString(),
-          cagrValue: `${new Decimal(cagrValue).toSD(3).toString()}%`,
+          totalValue: new Decimal(firstSnapshot.data.totalValueUSD)
+            .toDecimalPlaces(2)
+            .toString(),
+          cagrValue: `${new Decimal(cagrValue)
+            .toSD(3)
+            .toString()}%`,
           volatility: `${new Decimal(calculateVolatility(values))
             .mul(100)
             .toSD(3).toString()}%`,

@@ -1,9 +1,18 @@
 export const calculateCAGR = (
-  start: number,
-  end: number,
-  periods: number,
+  portfolioValues: number[],
+  days: number
 ) => {
-  return (Math.pow((end / start), 1 / periods) - 1) * 100
+  if (portfolioValues.length < 2) {
+    return 0
+  }
+  if (days <= 0) {
+    return 0
+  }
+  const endingValue: number = portfolioValues[0]; // Newest value
+  const startingValue: number = portfolioValues[portfolioValues.length - 1]; // Oldest value
+  const years: number = days / 365; // Convert days to years
+
+  return Math.pow(endingValue / startingValue, 1 / years) - 1;
 }
 
 export const calculateVolatility = (prices: number[]) => {
