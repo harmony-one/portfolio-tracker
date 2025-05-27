@@ -6,8 +6,8 @@ export const calculateAPR = (
   totalRewardsUSD: number,
   daysElapsed: number
 ) => {
-  if (depositedTotalUSD <= 0 || totalRewardsUSD < 0) {
-    throw new Error("Deposited total must be positive and rewards cannot be negative.");
+  if (depositedTotalUSD < 0) {
+    throw new Error("Deposited total must be positive.");
   }
 
   if (daysElapsed <= 0) {
@@ -85,6 +85,7 @@ export const roundToSignificantDigits = (
     return '0.' + '0'.repeat(n); // Returns "0.000..." with n zeros after decimal
   }
 
+  const isNegative = num < 0;
   const absNum = Math.abs(num);
   const magnitude = Math.floor(Math.log10(absNum));
 
@@ -92,7 +93,7 @@ export const roundToSignificantDigits = (
 
   const rounded = Math.round(absNum * scale) / scale;
 
-  const result = num < 0 ? -rounded : rounded;
+  const result = isNegative ? -rounded : rounded;
 
   // Convert to full decimal string
   if (magnitude >= 0) {

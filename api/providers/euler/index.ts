@@ -150,10 +150,10 @@ export const getEulerInfo = async (walletAddress: string) => {
 
         let merklRewardApr = rewardValue1
           ? calculateAPR(
-            Number(portfolioItem.depositValue),
-            Number(portfolioItem.rewardValue1),
-            Number(portfolioItem.totalDays)
-          )
+              Number(portfolioItem.depositValue),
+              Number(portfolioItem.rewardValue1),
+              Number(portfolioItem.totalDays)
+            )
           : 0;
         // Rewards are available only for 1 month, convert annualized rate into 1 month rate
         merklRewardApr = merklRewardApr / 12;

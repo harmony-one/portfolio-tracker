@@ -71,7 +71,15 @@ export class AppService {
           data,
         })
         await this.dataSource.manager.save(PortfolioSnapshotEntity, snapshotEntity);
-        this.logger.log(`Saved new snapshot: wallet=${walletAddress}, portfolio value=${JSON.stringify(data)}`)
+        this.logger.log(`Saved new snapshot: wallet=${
+          walletAddress
+        }, total=${
+          data.totalValueUSD
+        }, portfolio=${
+          data.items.map(item => {
+            return `[${item.platform} ${item.name}]=${item.value}`
+          }).join(', ')
+        }`)
       } catch (e) {
         this.logger.error('Failed to update wallet:', e)
       }
