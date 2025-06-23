@@ -83,8 +83,6 @@ export const MetricsTable = (props: {
       const values = sortedSnapshots
         .map(item => item.data.totalValueUSD)
 
-      console.log('Sorted values:', values)
-
       const firstSnapshot = sortedSnapshots[0]
       const lastSnapshot = sortedSnapshots[sortedSnapshots.length - 1]
 
@@ -103,6 +101,7 @@ export const MetricsTable = (props: {
             .toDecimalPlaces(2)
             .toString(),
           cagrValue: `${new Decimal(cagrValue)
+            .mul(100)
             .toSD(3)
             .toString()}%`,
           volatility: `${new Decimal(calculateVolatility([...values]))
