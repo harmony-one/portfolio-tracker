@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const client = axios.create({
-  baseURL: 'https://app.euler.finance/api/v2'
+  baseURL: 'https://app.euler.finance/api/v1'
 })
 
 export interface MerklRewards {
@@ -20,6 +20,6 @@ export interface MerklRewards {
 }
 
 export const getMerklRewards = async (walletAddress: string) => {
-  const { data } = await client.get<MerklRewards[]>(`rewards/merkl/user?chainId=146&address=${walletAddress}`)
+  const { data } = await client.get<MerklRewards[]>(`rewards/user?chainId=146&address=${walletAddress}`)
   return data
 }

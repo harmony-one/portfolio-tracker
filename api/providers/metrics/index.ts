@@ -2,7 +2,7 @@ import {getPendlePositions} from "../../api/pendle";
 import {getBeefyInfo} from "../beefy";
 import {getEulerInfo} from "../euler";
 import {getMagpieInfo} from "../magpie";
-import {getMerklRewards} from "../../api/euler-api";
+import {getMerklRewards, MerklRewards} from "../../api/euler-api";
 import Decimal from "decimal.js";
 
 const calculateCAGR = (
@@ -46,8 +46,16 @@ export const getPortfolioMetrics = async (
       return item.address === '0x3D9e5462A940684073EED7e4a13d19AE0Dcd13bc'
     })
     .reduce((acc, item) => acc + Number(item.depositValue) + Number(item.rewardValue), 0)
+    
 
-  const merklRewards = await getMerklRewards(walletAddress)
+  let merklRewards: MerklRewards[] = []
+  try {
+    merklRewards = await getMerklRewards(walletAddress)
+  } catch (error) {
+    console.error('Error fetching Merkl rewards:', error)
+    merklRewards = []
+  }
+
   const merklValue = merklRewards.reduce((acc, item) => {
     const { reward, accumulated, tokenPrice } = item
     const rewardDecimals = reward.decimals;
