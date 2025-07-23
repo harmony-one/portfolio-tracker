@@ -1,4 +1,4 @@
-import {getPendlePositions} from "../../api/pendle";
+import {getActivePendleMarkets, getInactivePendleMarkets, getPendlePositions, PendleMarket} from "../../api/pendle";
 import {getBeefyInfo} from "../beefy";
 import {getEulerInfo} from "../euler";
 import {getMagpieInfo} from "../magpie";
@@ -13,18 +13,65 @@ const calculateCAGR = (
   return (Math.pow((end / start), 1 / periods) - 1) * 100
 }
 
+export interface PortfolioMetric {
+  platform: string
+  name: string
+  value: number
+  link: string
+}
+
+const SONIC_CHAIN_ID = 146
+
 export const getPortfolioMetrics = async (
   walletAddress: string
 ) => {
-  let pendleLPValue = 0
-  let pendlePTValue = 0
-  const pendlePositions = await getPendlePositions(walletAddress)
-  const sonicPositions = pendlePositions.find(item => item.chainId === 146)
-  if(sonicPositions) {
-    const openPositions = sonicPositions.openPositions
-    pendleLPValue = openPositions.reduce((acc, cur) => acc + cur.lp.valuation, 0)
-    pendlePTValue = openPositions.reduce((acc, cur) => acc + cur.pt.valuation, 0)
+  const pendlePortfolioItems: PortfolioMetric[] = []
+
+  let allPendleMarkets: PendleMarket[] = []
+
+  try {
+    const activePendleMarkets = await getActivePendleMarkets(SONIC_CHAIN_ID)
+    const inactivePendleMarkets = await getInactivePendleMarkets(SONIC_CHAIN_ID)
+    allPendleMarkets = [...activePendleMarkets, ...inactivePendleMarkets]
+  } catch (e) {
+    console.error('Error fetching Pendle markets:', e)
+    allPendleMarkets = []
   }
+
+  const pendlePositions = await getPendlePositions(walletAddress)
+
+  const sonicPositionsInfos = pendlePositions.filter(item => item.chainId === 146)
+
+  if(sonicPositionsInfos.length > 0) {
+    for(const sonicPositionsInfo of sonicPositionsInfos) {
+      const { openPositions } = sonicPositionsInfo
+      for (const openPosition of openPositions) {
+        const { marketId: marketIdRaw, lp, pt } = openPosition
+        const [_, marketId] = marketIdRaw.split('-') // "marketIdRaw":"146-0xacfad541698437f6ef0e728c56a50ce35c73cc3e"
+
+        const marketName = allPendleMarkets.find(market => market.address === marketId)?.name || 'N/A'
+
+        if(lp.valuation > 0) {
+          pendlePortfolioItems.push({
+            platform: 'Pendle',
+            name: `LP ${marketName}`,
+            value: lp.valuation,
+            link: `https://app.pendle.finance/trade/pools/${marketId}/zap/in?chain=sonic`
+          })
+        }
+
+        if(pt.valuation > 0) {
+          pendlePortfolioItems.push({
+            platform: 'Pendle',
+            name: `PT ${marketName}`,
+            value: pt.valuation,
+            link: `https://app.pendle.finance/trade/markets/${marketId}/swap?view=pt&chain=sonic`
+          })
+        }
+      }
+    }
+  }
+
   const beefyItems = await getBeefyInfo(walletAddress);
   const eulerItems = await getEulerInfo(walletAddress);
   const magpieItems = await getMagpieInfo(walletAddress);
@@ -46,7 +93,7 @@ export const getPortfolioMetrics = async (
       return item.address === '0x3D9e5462A940684073EED7e4a13d19AE0Dcd13bc'
     })
     .reduce((acc, item) => acc + Number(item.depositValue) + Number(item.rewardValue), 0)
-    
+
 
   let merklRewards: MerklRewards[] = []
   try {
@@ -67,16 +114,7 @@ export const getPortfolioMetrics = async (
   }, 0)
 
   const items = [
-    {
-      platform: 'Pendle',
-      name: 'PT USDC (Silo-20)',
-      value: pendlePTValue
-    },
-    {
-      platform: 'Pendle',
-      name: 'LP aUSDC',
-      value: pendleLPValue
-    },
+    ...pendlePortfolioItems,
     {
       platform: 'Beefy',
       name: 'frxUSD-scUSD',
